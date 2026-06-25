@@ -1,0 +1,2 @@
+Training data:
+One forward-looking tip worth knowing now, since it may change how you format answers later: models learn multi-digit addition noticeably better when the answer's digits are written reversed (e.g. 12+34=64 meaning 46 read right-to-left), because carries propagate right-to-left and the model can then generate them in the order it computes them. You don't need to decide this yet, but keep it in mind for when you design the data format.
