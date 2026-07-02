@@ -12,7 +12,7 @@ SPECIAL_TOKENS = [PAD, BOS, EOS, UNK]
 # --- Content tokens ---------------------------------------------
 DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] # 0-9 as character
 OPERATORS = ['+', '-', '/', '*'] # math ops
-SYMBOLS = ['=', '.'] # '=' separates question/answer; '.' for decimals
+SYMBOLS = ['=', '.', '~'] # '=' separates question/answer; '.' for decimals, '~' = negative sign (distinct from '-' operator)
 
 
 # --- Full ordered token list. ---------------------------------------------
@@ -29,7 +29,13 @@ def encode(input: str, stoi: dict[str, int]) -> list[int]:
     """Turn a string like '12+34=46' into a list of token ids.
     Unknown characters map to <unk> instead of crashing.
     """
-    ids: list[int] = [ stoi.get(ch, UNK) for ch in input ]
+    ids: list[int] = []
+    for i in range(len(input)):
+        ch = input[i]
+        if ch == '-' and (i==0 or input[i-1]=='=') : # -10+32=22 -> ~10+32=22 or -10-20=-30 -> ~10-20=~30
+            ids.append(stoi.get('~', stoi[UNK]))
+        else:
+            ids.append(stoi.get(ch, stoi[UNK]))
     return ids
 
 def decode(ids: list[int], itos: dict[int, str]) -> str:
@@ -40,7 +46,10 @@ def decode(ids: list[int], itos: dict[int, str]) -> str:
         token: str = itos.get(id, UNK)
         if token == PAD or token == BOS or token == EOS or token==UNK:
             continue
-        chars.append(token)
+        if token == '~':
+            chars.append('-')
+        else:
+            chars.append(token)
     return "".join(chars) 
         
 # Convenience constants you'll reuse in later steps (dataset, model, training).
@@ -57,5 +66,22 @@ if '__main__' == __name__:
     ids = encode(sample, stoi)
     print(f"\nEncode {sample!r} -> {ids}")
     print(f"Decode back        -> {decode(ids, itos)!r}")    
+    print("-------------")
 
+    sample = "-128*64=-8192"
+    ids = encode(sample, stoi)
+    print(f"\nEncode {sample!r} -> {ids}")
+    print(f"Decode back        -> {decode(ids, itos)!r}") 
+    print("-------------")
 
+    sample="5-9=-4"
+    ids = encode(sample, stoi)
+    print(f"\nEncode {sample!r} -> {ids}")
+    print(f"Decode back        -> {decode(ids, itos)!r}")     
+    print("-------------")
+
+    sample="5p9=-4"
+    ids = encode(sample, stoi)
+    print(f"\nEncode {sample!r} -> {ids}")
+    print(f"Decode back        -> {decode(ids, itos)!r}")     
+    print("-------------")

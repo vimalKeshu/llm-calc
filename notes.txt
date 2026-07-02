@@ -1,2 +1,317 @@
 Training data:
-One forward-looking tip worth knowing now, since it may change how you format answers later: models learn multi-digit addition noticeably better when the answer's digits are written reversed (e.g. 12+34=64 meaning 46 read right-to-left), because carries propagate right-to-left and the model can then generate them in the order it computes them. You don't need to decide this yet, but keep it in mind for when you design the data format.
+One forward-looking tip worth knowing now, 
+since it may change how you format answers later: models learn multi-digit addition noticeably 
+better when the answer's digits are written reversed (e.g. 12+34=64 meaning 46 read right-to-left), 
+because carries propagate right-to-left and the model can then generate them in the order it computes them. 
+You don't need to decide this yet, but keep it in mind for when you design the data format.
+
+
+-999+999=-000000
+
+n=50K
+epoch   1/20  train_loss=2.1258  val_loss=2.0096                                                                                              
+epoch   2/20  train_loss=1.9867  val_loss=1.9180                                                                                                                    
+epoch   3/20  train_loss=1.9297  val_loss=1.8811                                                                                                                    
+epoch   4/20  train_loss=1.9017  val_loss=1.8453                                                                                                                    
+epoch   5/20  train_loss=1.8796  val_loss=1.8162                                                                                                                    
+epoch   6/20  train_loss=1.8571  val_loss=1.8009                                                                                                                    
+epoch   7/20  train_loss=1.8362  val_loss=1.7868                                                                                                                    
+epoch   8/20  train_loss=1.8156  val_loss=1.7588                                                                                                                    
+epoch   9/20  train_loss=1.8001  val_loss=1.7429                                                                                                                    
+epoch  10/20  train_loss=1.7843  val_loss=1.7230                                                                                                                    
+epoch  11/20  train_loss=1.7729  val_loss=1.6944                                                                                                                    
+epoch  12/20  train_loss=1.7580  val_loss=1.6866                                                                                                                    
+epoch  13/20  train_loss=1.7446  val_loss=1.6532                                                                                                                    
+epoch  14/20  train_loss=1.7265  val_loss=1.6371                                                                                                                    
+epoch  15/20  train_loss=1.7076  val_loss=1.6194                                                                                                                    
+epoch  16/20  train_loss=1.6893  val_loss=1.6129                                                                                                                    
+epoch  17/20  train_loss=1.6698  val_loss=1.5856                                                                                                                    
+epoch  18/20  train_loss=1.6533  val_loss=1.5697                                                                                                                    
+epoch  19/20  train_loss=1.6345  val_loss=1.5450                                                                                                                    
+epoch  20/20  train_loss=1.6186  val_loss=1.5312 
+
+
+n=100K
+epoch   1/20  train_loss=2.0435  val_loss=1.9373
+epoch   2/20  train_loss=1.9118  val_loss=1.8540
+epoch   3/20  train_loss=1.8641  val_loss=1.8004
+epoch   4/20  train_loss=1.8157  val_loss=1.7170
+epoch   5/20  train_loss=1.7777  val_loss=1.6822
+epoch   6/20  train_loss=1.7449  val_loss=1.6424
+epoch   7/20  train_loss=1.7106  val_loss=1.6148
+epoch   8/20  train_loss=1.6654  val_loss=1.5699
+epoch   9/20  train_loss=1.6265  val_loss=1.5357
+epoch  10/20  train_loss=1.5997  val_loss=1.5019
+epoch  11/20  train_loss=1.5799  val_loss=1.4922
+epoch  12/20  train_loss=1.5638  val_loss=1.4814
+epoch  13/20  train_loss=1.5516  val_loss=1.4713
+epoch  14/20  train_loss=1.5409  val_loss=1.4659
+epoch  15/20  train_loss=1.5309  val_loss=1.4549
+epoch  16/20  train_loss=1.5231  val_loss=1.4500
+epoch  17/20  train_loss=1.5157  val_loss=1.4375
+epoch  18/20  train_loss=1.5100  val_loss=1.4341
+epoch  19/20  train_loss=1.5044  val_loss=1.4349
+epoch  20/20  train_loss=1.4985  val_loss=1.4301
+
+n=100K, epoch=40
+epoch   1/40  train_loss=2.0509  val_loss=1.9434
+epoch   2/40  train_loss=1.9176  val_loss=1.8575
+epoch   3/40  train_loss=1.8743  val_loss=1.8076
+epoch   4/40  train_loss=1.8381  val_loss=1.7670
+epoch   5/40  train_loss=1.8013  val_loss=1.7166
+epoch   6/40  train_loss=1.7710  val_loss=1.6735
+epoch   7/40  train_loss=1.7405  val_loss=1.6429
+epoch   8/40  train_loss=1.6941  val_loss=1.5978
+epoch   9/40  train_loss=1.6407  val_loss=1.5626
+epoch  10/40  train_loss=1.6041  val_loss=1.5054
+epoch  11/40  train_loss=1.5790  val_loss=1.5046
+epoch  12/40  train_loss=1.5626  val_loss=1.4831
+epoch  13/40  train_loss=1.5507  val_loss=1.4756
+epoch  14/40  train_loss=1.5414  val_loss=1.4615
+epoch  15/40  train_loss=1.5338  val_loss=1.4604
+epoch  16/40  train_loss=1.5279  val_loss=1.4504
+epoch  17/40  train_loss=1.5216  val_loss=1.4521
+epoch  18/40  train_loss=1.5158  val_loss=1.4447
+epoch  19/40  train_loss=1.5112  val_loss=1.4444
+epoch  20/40  train_loss=1.5062  val_loss=1.4375
+epoch  21/40  train_loss=1.5023  val_loss=1.4340
+epoch  22/40  train_loss=1.4978  val_loss=1.4350
+epoch  23/40  train_loss=1.4942  val_loss=1.4287
+epoch  24/40  train_loss=1.4899  val_loss=1.4310
+epoch  25/40  train_loss=1.4861  val_loss=1.4171
+epoch  26/40  train_loss=1.4816  val_loss=1.4183
+epoch  27/40  train_loss=1.4778  val_loss=1.4106
+epoch  28/40  train_loss=1.4711  val_loss=1.4133
+epoch  29/40  train_loss=1.4677  val_loss=1.4069
+epoch  30/40  train_loss=1.4649  val_loss=1.4050
+epoch  31/40  train_loss=1.4617  val_loss=1.3981
+epoch  32/40  train_loss=1.4592  val_loss=1.4007
+epoch  33/40  train_loss=1.4557  val_loss=1.4034
+epoch  34/40  train_loss=1.4530  val_loss=1.3990
+epoch  35/40  train_loss=1.4506  val_loss=1.3970
+epoch  36/40  train_loss=1.4482  val_loss=1.3940
+epoch  37/40  train_loss=1.4467  val_loss=1.3922
+epoch  38/40  train_loss=1.4445  val_loss=1.3891
+epoch  39/40  train_loss=1.4429  val_loss=1.3937
+epoch  40/40  train_loss=1.4402  val_loss=1.3938
+
+n=100K, epoch=100
+epoch   1/100  train_loss=1.9269  val_loss=1.8139
+epoch   2/100  train_loss=1.7882  val_loss=1.7617
+epoch   3/100  train_loss=1.7414  val_loss=1.7043
+epoch   4/100  train_loss=1.7095  val_loss=1.6676
+epoch   5/100  train_loss=1.6841  val_loss=1.6299
+epoch   6/100  train_loss=1.6605  val_loss=1.5934
+epoch   7/100  train_loss=1.6419  val_loss=1.5657
+epoch   8/100  train_loss=1.6254  val_loss=1.5367
+epoch   9/100  train_loss=1.6095  val_loss=1.5188
+epoch  10/100  train_loss=1.5885  val_loss=1.4882
+epoch  11/100  train_loss=1.5573  val_loss=1.4710
+epoch  12/100  train_loss=1.5298  val_loss=1.4476
+epoch  13/100  train_loss=1.5117  val_loss=1.4341
+epoch  14/100  train_loss=1.4971  val_loss=1.4146
+epoch  15/100  train_loss=1.4853  val_loss=1.4076
+epoch  16/100  train_loss=1.4750  val_loss=1.4006
+epoch  17/100  train_loss=1.4666  val_loss=1.3983
+epoch  18/100  train_loss=1.4596  val_loss=1.3913
+epoch  19/100  train_loss=1.4534  val_loss=1.3862
+epoch  20/100  train_loss=1.4479  val_loss=1.3860
+epoch  21/100  train_loss=1.4437  val_loss=1.3778
+epoch  22/100  train_loss=1.4396  val_loss=1.3806
+epoch  23/100  train_loss=1.4354  val_loss=1.3774
+epoch  24/100  train_loss=1.4320  val_loss=1.3712
+epoch  25/100  train_loss=1.4288  val_loss=1.3680
+epoch  26/100  train_loss=1.4250  val_loss=1.3703
+epoch  27/100  train_loss=1.4222  val_loss=1.3667
+epoch  28/100  train_loss=1.4195  val_loss=1.3602
+epoch  29/100  train_loss=1.4168  val_loss=1.3634
+epoch  30/100  train_loss=1.4150  val_loss=1.3562
+epoch  31/100  train_loss=1.4119  val_loss=1.3601
+epoch  32/100  train_loss=1.4102  val_loss=1.3582
+epoch  33/100  train_loss=1.4077  val_loss=1.3497
+epoch  34/100  train_loss=1.4059  val_loss=1.3512
+epoch  35/100  train_loss=1.4038  val_loss=1.3548
+epoch  36/100  train_loss=1.4023  val_loss=1.3454
+epoch  37/100  train_loss=1.4002  val_loss=1.3496
+epoch  38/100  train_loss=1.3990  val_loss=1.3439
+epoch  39/100  train_loss=1.3966  val_loss=1.3421
+epoch  40/100  train_loss=1.3952  val_loss=1.3393
+epoch  41/100  train_loss=1.3934  val_loss=1.3410
+epoch  42/100  train_loss=1.3919  val_loss=1.3388
+epoch  43/100  train_loss=1.3905  val_loss=1.3386
+epoch  44/100  train_loss=1.3892  val_loss=1.3390
+epoch  45/100  train_loss=1.3877  val_loss=1.3423
+epoch  46/100  train_loss=1.3852  val_loss=1.3371
+epoch  47/100  train_loss=1.3850  val_loss=1.3366
+epoch  48/100  train_loss=1.3832  val_loss=1.3374
+epoch  49/100  train_loss=1.3820  val_loss=1.3325
+epoch  50/100  train_loss=1.3806  val_loss=1.3323
+epoch  51/100  train_loss=1.3792  val_loss=1.3314
+epoch  52/100  train_loss=1.3784  val_loss=1.3312
+epoch  53/100  train_loss=1.3775  val_loss=1.3270
+epoch  54/100  train_loss=1.3759  val_loss=1.3289
+epoch  55/100  train_loss=1.3745  val_loss=1.3324
+epoch  56/100  train_loss=1.3736  val_loss=1.3292
+epoch  57/100  train_loss=1.3725  val_loss=1.3271
+epoch  58/100  train_loss=1.3715  val_loss=1.3276
+epoch  59/100  train_loss=1.3700  val_loss=1.3299
+epoch  60/100  train_loss=1.3695  val_loss=1.3271
+epoch  61/100  train_loss=1.3681  val_loss=1.3253
+epoch  62/100  train_loss=1.3670  val_loss=1.3256
+epoch  63/100  train_loss=1.3663  val_loss=1.3273
+epoch  64/100  train_loss=1.3651  val_loss=1.3231
+epoch  65/100  train_loss=1.3643  val_loss=1.3237
+epoch  66/100  train_loss=1.3631  val_loss=1.3222
+epoch  67/100  train_loss=1.3621  val_loss=1.3221
+epoch  68/100  train_loss=1.3616  val_loss=1.3257
+epoch  69/100  train_loss=1.3609  val_loss=1.3257
+epoch  70/100  train_loss=1.3594  val_loss=1.3249
+epoch  71/100  train_loss=1.3588  val_loss=1.3222
+epoch  72/100  train_loss=1.3577  val_loss=1.3215
+epoch  73/100  train_loss=1.3569  val_loss=1.3241
+epoch  74/100  train_loss=1.3560  val_loss=1.3192
+epoch  75/100  train_loss=1.3554  val_loss=1.3210
+epoch  76/100  train_loss=1.3545  val_loss=1.3203
+epoch  77/100  train_loss=1.3534  val_loss=1.3183
+epoch  78/100  train_loss=1.3526  val_loss=1.3161
+epoch  79/100  train_loss=1.3519  val_loss=1.3223
+epoch  80/100  train_loss=1.3511  val_loss=1.3189
+epoch  81/100  train_loss=1.3502  val_loss=1.3195
+epoch  82/100  train_loss=1.3492  val_loss=1.3193
+epoch  83/100  train_loss=1.3488  val_loss=1.3156
+epoch  84/100  train_loss=1.3479  val_loss=1.3187
+epoch  85/100  train_loss=1.3474  val_loss=1.3201
+epoch  86/100  train_loss=1.3465  val_loss=1.3202
+epoch  87/100  train_loss=1.3455  val_loss=1.3184
+epoch  88/100  train_loss=1.3444  val_loss=1.3177
+epoch  89/100  train_loss=1.3442  val_loss=1.3174
+epoch  90/100  train_loss=1.3429  val_loss=1.3187
+epoch  91/100  train_loss=1.3425  val_loss=1.3154
+epoch  92/100  train_loss=1.3417  val_loss=1.3157
+epoch  93/100  train_loss=1.3408  val_loss=1.3172
+epoch  94/100  train_loss=1.3402  val_loss=1.3186
+epoch  95/100  train_loss=1.3399  val_loss=1.3189
+epoch  96/100  train_loss=1.3386  val_loss=1.3164
+epoch  97/100  train_loss=1.3381  val_loss=1.3163
+epoch  98/100  train_loss=1.3377  val_loss=1.3165
+epoch  99/100  train_loss=1.3373  val_loss=1.3156
+epoch 100/100  train_loss=1.3362  val_loss=1.3153
+
+device: mps
+2+2=4
+2-2=0
+-2+2=24
+2*2=4
+100*2=200
+100/2=50
+9/2=4.5
+-5-2=53
+5-2=3
+-5+2=57
+333*333=109009
+333*3=1099
+
+n=100K, epoch=100, LR Scheduler 
+epoch   1/100  train_loss=2.6001  val_loss=2.0992
+epoch   2/100  train_loss=1.9622  val_loss=1.9436
+epoch   3/100  train_loss=1.9009  val_loss=1.8883
+epoch   4/100  train_loss=1.8482  val_loss=1.8058
+epoch   5/100  train_loss=1.8006  val_loss=1.7707
+epoch   6/100  train_loss=1.7729  val_loss=1.7404
+epoch   7/100  train_loss=1.7491  val_loss=1.7032
+epoch   8/100  train_loss=1.7210  val_loss=1.6927
+epoch   9/100  train_loss=1.6979  val_loss=1.6522
+epoch  10/100  train_loss=1.6785  val_loss=1.6208
+epoch  11/100  train_loss=1.6596  val_loss=1.6107
+epoch  12/100  train_loss=1.6403  val_loss=1.5731
+epoch  13/100  train_loss=1.6229  val_loss=1.5393
+epoch  14/100  train_loss=1.6065  val_loss=1.5307
+epoch  15/100  train_loss=1.5890  val_loss=1.4995
+epoch  16/100  train_loss=1.5649  val_loss=1.4794
+epoch  17/100  train_loss=1.5396  val_loss=1.4378
+epoch  18/100  train_loss=1.5149  val_loss=1.4318
+epoch  19/100  train_loss=1.4959  val_loss=1.4146
+epoch  20/100  train_loss=1.4819  val_loss=1.4063
+epoch  21/100  train_loss=1.4713  val_loss=1.3956
+epoch  22/100  train_loss=1.4613  val_loss=1.3933
+epoch  23/100  train_loss=1.4547  val_loss=1.3857
+epoch  24/100  train_loss=1.4492  val_loss=1.3903
+epoch  25/100  train_loss=1.4436  val_loss=1.3790
+epoch  26/100  train_loss=1.4389  val_loss=1.3749
+epoch  27/100  train_loss=1.4344  val_loss=1.3696
+epoch  28/100  train_loss=1.4306  val_loss=1.3683
+epoch  29/100  train_loss=1.4273  val_loss=1.3673
+epoch  30/100  train_loss=1.4237  val_loss=1.3602
+epoch  31/100  train_loss=1.4196  val_loss=1.3583
+epoch  32/100  train_loss=1.4167  val_loss=1.3566
+epoch  33/100  train_loss=1.4133  val_loss=1.3575
+epoch  34/100  train_loss=1.4103  val_loss=1.3536
+epoch  35/100  train_loss=1.4074  val_loss=1.3470
+epoch  36/100  train_loss=1.4053  val_loss=1.3465
+epoch  37/100  train_loss=1.4027  val_loss=1.3442
+epoch  38/100  train_loss=1.4000  val_loss=1.3389
+epoch  39/100  train_loss=1.3972  val_loss=1.3424
+epoch  40/100  train_loss=1.3950  val_loss=1.3424
+epoch  41/100  train_loss=1.3930  val_loss=1.3387
+epoch  42/100  train_loss=1.3908  val_loss=1.3353
+epoch  43/100  train_loss=1.3886  val_loss=1.3381
+epoch  44/100  train_loss=1.3870  val_loss=1.3319
+epoch  45/100  train_loss=1.3849  val_loss=1.3328
+epoch  46/100  train_loss=1.3831  val_loss=1.3350
+epoch  47/100  train_loss=1.3811  val_loss=1.3325
+epoch  48/100  train_loss=1.3799  val_loss=1.3281
+epoch  49/100  train_loss=1.3782  val_loss=1.3276
+epoch  50/100  train_loss=1.3757  val_loss=1.3293
+epoch  51/100  train_loss=1.3748  val_loss=1.3306
+epoch  52/100  train_loss=1.3731  val_loss=1.3262
+epoch  53/100  train_loss=1.3712  val_loss=1.3247
+epoch  54/100  train_loss=1.3699  val_loss=1.3252
+epoch  55/100  train_loss=1.3684  val_loss=1.3233
+epoch  56/100  train_loss=1.3669  val_loss=1.3263
+epoch  57/100  train_loss=1.3658  val_loss=1.3221
+epoch  58/100  train_loss=1.3642  val_loss=1.3212
+epoch  59/100  train_loss=1.3632  val_loss=1.3252
+epoch  60/100  train_loss=1.3618  val_loss=1.3218
+epoch  61/100  train_loss=1.3607  val_loss=1.3218
+epoch  62/100  train_loss=1.3597  val_loss=1.3224
+epoch  63/100  train_loss=1.3578  val_loss=1.3208
+epoch  64/100  train_loss=1.3566  val_loss=1.3219
+epoch  65/100  train_loss=1.3557  val_loss=1.3175
+epoch  66/100  train_loss=1.3551  val_loss=1.3178
+epoch  67/100  train_loss=1.3538  val_loss=1.3202
+epoch  68/100  train_loss=1.3530  val_loss=1.3187
+epoch  69/100  train_loss=1.3519  val_loss=1.3193
+epoch  70/100  train_loss=1.3509  val_loss=1.3195
+epoch  71/100  train_loss=1.3500  val_loss=1.3190
+epoch  72/100  train_loss=1.3493  val_loss=1.3196
+epoch  73/100  train_loss=1.3484  val_loss=1.3163
+epoch  74/100  train_loss=1.3473  val_loss=1.3163
+epoch  75/100  train_loss=1.3467  val_loss=1.3171
+epoch  76/100  train_loss=1.3459  val_loss=1.3169
+epoch  77/100  train_loss=1.3452  val_loss=1.3170
+epoch  78/100  train_loss=1.3445  val_loss=1.3172
+epoch  79/100  train_loss=1.3441  val_loss=1.3186
+epoch  80/100  train_loss=1.3432  val_loss=1.3157
+epoch  81/100  train_loss=1.3427  val_loss=1.3170
+epoch  82/100  train_loss=1.3421  val_loss=1.3162
+epoch  83/100  train_loss=1.3415  val_loss=1.3159
+epoch  84/100  train_loss=1.3412  val_loss=1.3147
+epoch  85/100  train_loss=1.3407  val_loss=1.3150
+epoch  86/100  train_loss=1.3404  val_loss=1.3146
+epoch  87/100  train_loss=1.3401  val_loss=1.3144
+epoch  88/100  train_loss=1.3396  val_loss=1.3145
+epoch  89/100  train_loss=1.3392  val_loss=1.3145
+epoch  90/100  train_loss=1.3390  val_loss=1.3144
+epoch  91/100  train_loss=1.3386  val_loss=1.3141
+epoch  92/100  train_loss=1.3384  val_loss=1.3135
+epoch  93/100  train_loss=1.3382  val_loss=1.3137
+epoch  94/100  train_loss=1.3384  val_loss=1.3134
+epoch  95/100  train_loss=1.3382  val_loss=1.3134
+epoch  96/100  train_loss=1.3378  val_loss=1.3134
+epoch  97/100  train_loss=1.3379  val_loss=1.3135
+epoch  98/100  train_loss=1.3381  val_loss=1.3135
+epoch  99/100  train_loss=1.3377  val_loss=1.3135
+epoch 100/100  train_loss=1.3378  val_loss=1.3135
+
+
+n=100K, epoch=500, LR Scheduler

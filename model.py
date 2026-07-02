@@ -1,7 +1,5 @@
 # type: ignore
 
-from turtle import forward
-
 import torch
 import torch.nn as nn 
 import math 
@@ -33,15 +31,14 @@ class RMSLayerNormalization(nn.Module):
         mean = x.pow(2).mean(dim=-1, keepdim=True)
         return self.weight * x * torch.rsqrt(mean + self.eps)
 
-
 class RotaryEmbedding(nn.Module):
 
-    def __init__(self, h_dim: int, max_seq_len: int, base: float = 10000.0) -> None:
+    def __init__(self, max_seq_len: int, h_dim: int, base: float = 10000.0) -> None:
         super().__init__()
         assert h_dim % 2 == 0, "h_dim must be even (dims are rotated in pairs)."
         # --- Ingredient 1: the frequencies, one per pair ---
         # arange(0, head_dim, 2) gives 0, 2, 4, ... -> one entry per pair.
-        inv_freq = 1.0 / (base ** (torch.arange(0, head_dim, 2).float() / head_dim)) # inv_freq shape: (head_dim/2,)
+        inv_freq = 1.0 / (base ** (torch.arange(0, h_dim, 2).float() / h_dim)) # inv_freq shape: (head_dim/2,)
 
         # --- Ingredient 2: the positions ---
         t = torch.arange(max_seq_len).float()          # (max_seq_len,)
@@ -78,7 +75,7 @@ class RotaryEmbedding(nn.Module):
 class MultiHeadAttentionBlock(nn.Module):
     """Causal self attention."""
 
-    def __init__(self, d_model: int, h: int, dropout: float = 0.5) -> None:
+    def __init__(self, max_seq_len: int, d_model: int, h: int, dropout: float = 0.5) -> None:
         super().__init__()
         assert d_model % h == 0, "Model dimension should be divisible by no. of attention heads."
         self.d_model = d_model
@@ -89,6 +86,8 @@ class MultiHeadAttentionBlock(nn.Module):
         self.w_k = nn.Linear(in_features=d_model, out_features=d_model, bias=False)
         self.w_v = nn.Linear(in_features=d_model, out_features=d_model, bias=False)
         self.w_o = nn.Linear(in_features=d_model, out_features=d_model, bias=False)
+
+        self.rope = RotaryEmbedding(max_seq_len, self.d_head)
 
         self.dropout = nn.Dropout(dropout)
 
@@ -107,15 +106,134 @@ class MultiHeadAttentionBlock(nn.Module):
         k_heads = k.view(b, s, self.heads, self.d_head).transpose(1, 2)
         v_heads = v.view(b, s, self.heads, self.d_head).transpose(1, 2)
 
+        q_heads = self.rope(q_heads)        # <-- rotate Q
+        k_heads = self.rope(k_heads)        # <-- rotate K
+
         attn_score = (q_heads @ k_heads.transpose(-2, -1)) / math.sqrt(self.d_head)
+
         if mask is not None:
             attn_score = attn_score.masked_fill(mask==0, value=float('-inf'))
+
         attn = torch.nn.functional.softmax(attn_score, dim=-1)
         attn = self.dropout(attn)
         attn_output = attn @ v_heads
         output = attn_output.transpose(1, 2).contiguous().reshape(b, s, d)
 
         return self.w_o(output)
+
+class MLP(nn.Module):
+    """Feed forward network. Also called MLP."""
+
+    def __init__(self, d_model: int, d_ff: int, dropout: float = 0.5) -> None:
+        super().__init__()
+        self.dropout = nn.Dropout(dropout)
+        self.fc1 = nn.Linear(in_features=d_model, out_features=d_ff)      # expand
+        self.fc2 = nn.Linear(in_features=d_ff, out_features=d_model)      # project back
+        self.act = nn.GELU()                     # nonlinearity
+
+    def forward(self, x: torch.Tensor):
+        """(batch, seq_len, d_model) --> (batch, seq_len, d_ff) --> (batch, seq_len, d_model)"""
+        x_temp = self.fc1(x)
+        x_temp = self.act(x_temp)
+
+        x_temp = self.dropout(x_temp)
+        x_final = self.fc2(x_temp)
+
+        return x_final
+
+class DecoderBlock(nn.Module):
+    """Transformer decoder block."""
+
+    def __init__(self, 
+                 max_seq_len: int, 
+                 d_model: int, 
+                 attention_heads: int, 
+                 d_ff:int, 
+                 eps: float = 1e-6, 
+                 dropout: float = 0.5) -> None:
+        super().__init__()
+        self.layer_norm_1 = RMSLayerNormalization(d_model=d_model, eps=eps)
+        self.layer_norm_2 = RMSLayerNormalization(d_model=d_model, eps=eps)
+        self.attn = MultiHeadAttentionBlock(max_seq_len, d_model, attention_heads, dropout)
+        self.ffn = MLP(d_model, d_ff)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x: torch.Tensor, mask: torch.Tensor):
+        x_norm_1 = self.layer_norm_1(x)
+        x_attn = self.attn(x_norm_1, mask)
+        x_dropout_1 = self.dropout(x_attn)
+        x = x + x_dropout_1
+
+        x_norm_2 = self.layer_norm_2(x)
+        x_ffn = self.ffn(x_norm_2)
+        x_dropout_2 = self.dropout(x_ffn)
+        x = x + x_dropout_2
+
+        return x
+
+class LLMCalcModel(nn.Module):
+
+    def __init__(self, 
+                 vocab_size: int, 
+                 max_seq_len: int, 
+                 d_model: int, 
+                 attention_heads: int,
+                 n_layers: int,  
+                 eps: float = 1e-6, 
+                 dropout: float = 0.5) -> None:
+        super().__init__()
+        self.embedding: nn.Module = WordEmbeddings(d_model, vocab_size)
+        layers=[]
+        for _ in range(n_layers):
+            layers.append(DecoderBlock(max_seq_len, d_model, attention_heads, 4 * d_model, eps, dropout))
+        self.decoder_layers = nn.ModuleList(layers)
+        self.layer_norm = RMSLayerNormalization(d_model)
+        self.projection = nn.Linear(d_model, vocab_size, bias=False)
+    
+    def forward(self, x: torch.Tensor, mask: torch.Tensor):
+        x = self.embedding(x)
+
+        for decoder in self.decoder_layers:
+            x = decoder(x, mask)
+
+        x = self.layer_norm(x)
+        x = self.projection(x)
+
+        return x 
+
+
+if '__main__' == __name__:
+    calc: LLMCalcModel = LLMCalcModel(vocab_size=32, 
+                                      max_seq_len=8, 
+                                      d_model=8, 
+                                      attention_heads=2, 
+                                      n_layers=4)
+    # EMBEDDING:  
+    #     32 * 8 = 256 
+    # Decoder block:
+    #     MHA: 8 * 8  = 64 * 4                = 256  
+    #     FFN: (8 * 32 + 32) +  (32 * 8 + 8)  = 552 
+    #     RMS: 8 = 8 * 2                      = 016
+    #     -----------------------------------------
+    #     Total                               = 824
+    #     4 Decoder block:
+    #     824 * 4 = 3296
+    # Others:
+    #     RMS: 8             = 008
+    #     PROJECTION: 8 * 32 = 256
+    #     -------------------------
+    #     Total              = 264
+    # Model params:
+    # 0256 + 3296 + 0264 = 3816
+    total = 0
+    for p in calc.parameters():
+        total += p.numel()
+    print("total params:", total)    
+
+
+
+                
+            
 
 
 
