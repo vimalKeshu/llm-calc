@@ -1,9 +1,9 @@
 model:
   vocab_size: 21        # len(vocab.TOKENS) = 4 special + 10 digits + 4 ops + 3 symbols
   max_seq_len: 18
-  d_model: 256
+  d_model: 128
   attention_heads: 4
-  n_layers: 6
+  n_layers: 4
   dropout: 0.05
 
 train:
@@ -12,4 +12,4 @@ train:
   epochs: 170
   lr: 3e-4
   # checkpoint_path: checkpoint.pt
-  checkpoint_path: final.pt  
+  checkpoint_path: 136.pt  

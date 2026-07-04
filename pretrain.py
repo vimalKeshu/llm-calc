@@ -131,7 +131,68 @@ def eval(args):
     model.eval()
     stoi, itos = V.build_vocab()
 
-    tests = ["2+2=", "2-2=", "-2+2=", "2*2=", "100*2=", "100/2=", "9/2=", "-5-2=", "5-2=", "-5+2=", "333*333=", "333*3="]
+    # tests = (["2+2=", 
+    #           "2-2=", 
+    #           "-2+2=", 
+    #           "2*2=", 
+    #           "100*2=", 
+    #           "100/2=", 
+    #           "9/2=", 
+    #           "-5-2=", 
+    #           "5-2=", 
+    #           "-5+2=", 
+    #           "333*333=", 
+    #           "333*3=", 
+    #           "333+333=", 
+    #           "333/333="])
+
+    tests = ([
+      # --- carry propagation ---
+      "999+1=",       # crosses digit boundary → 1000
+      "999+999=",     # max addition → 1998
+      "100-1=",       # borrow across zeros
+
+      # --- large multiplication ---
+      "999*999=",     # max → 998001
+      "123*456=",     # irregular digits
+      "500*200=",     # trailing zeros
+
+      # --- subtraction producing negatives ---
+      "1-999=",       # large negative result
+      "100-999=",
+      "5-9=",
+
+      # --- negative operand all ops ---
+      "-333+100=",
+      "-333*3=",
+      "-333/3=",
+      "-999+999=",    # should be 0
+
+      # --- decimal division (repeating) ---
+      "1/3=",         # 0.333
+      "2/3=",         # 0.667
+      "10/3=",        # 3.333
+      "100/7=",       # 14.286
+      "1/7=",         # 0.143
+
+      # --- zero edge cases ---
+      "0*999=",
+      "0/999=",
+      "999*0=",
+      "999-999=",     # should be 0
+
+      # --- identity / trivial ---
+      "999+0=",
+      "999*1=",
+      "999/1=",
+      "999/999=",     # should be 1
+
+      # --- cross-bucket hard ---
+      "9*999=",       # 8991
+      "999*9=",       # 8991 — symmetric, tests both orderings
+      "99*99=",       # 9801
+      "-99*99=",
+    ])
     max_seq_len=int(mc["max_seq_len"])
     with torch.no_grad():
         for test in tests:

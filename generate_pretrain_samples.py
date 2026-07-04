@@ -45,9 +45,13 @@ def verify(expr):
 def generate_train(n, clean_div_ratio=0.3, edge_ratio=0.05, neg_ratio=0.2):
     samples = set()
     cells = list(product(BUCKETS, BUCKETS, V.OPERATORS))
-    per_cell = max(1, int(n * (1 - edge_ratio)) // len(cells))
+
+    # boost large*large and large/large cells with 2x weight
+    heavy_cells = {((100, 999), (100, 999), '*'), ((100, 999), (100, 999), '/')}
+    base_per_cell = max(1, int(n * (1 - edge_ratio)) // (len(cells) + len(heavy_cells)))
 
     for (lo_a, hi_a), (lo_b, hi_b), op in cells:
+        per_cell = base_per_cell * 2 if ((lo_a, hi_a), (lo_b, hi_b), op) in heavy_cells else base_per_cell
         count = 0
         while count < per_cell:
             a = random.randint(lo_a, hi_a)
@@ -57,6 +61,10 @@ def generate_train(n, clean_div_ratio=0.3, edge_ratio=0.05, neg_ratio=0.2):
                 if random.random() < clean_div_ratio:
                     k = random.randint(1, max(1, 999 // b))
                     a = min(b * k, 999)
+                else:
+                    # ensure all single-digit divisors 1-9 are well represented
+                    if random.random() < 0.3:
+                        b = random.randint(1, 9)
             if a != 0 and random.random() < neg_ratio:
                 a = -a
             expr = make_expr(a, b, op)
@@ -64,13 +72,24 @@ def generate_train(n, clean_div_ratio=0.3, edge_ratio=0.05, neg_ratio=0.2):
                 samples.add(expr)
                 count += 1
 
+    # edge pool: 1-digit, 2-digit, 3-digit self-subtraction (a-a=0) + other edges
     edge_pool = []
     for op in V.OPERATORS:
         for v in range(0, 10):
             for a, b in [(0, v), (v, 1), (v, v), (-v, 1), (-v, v)]:
                 expr = make_expr(a, b, op)
-                if verify(expr):
-                    edge_pool.append(expr)
+                if verify(expr): edge_pool.append(expr)
+        # 2-digit and 3-digit a-a=0
+        for v in [10, 25, 50, 75, 99, 100, 250, 500, 750, 999]:
+            for signed_v in [v, -v]:
+                expr = make_expr(signed_v, v, op)
+                if verify(expr): edge_pool.append(expr)
+        # identity: a*1, a/1, a+0, a-0 for all digit lengths
+        for v in [1, 9, 10, 99, 100, 999]:
+            for a, b in [(v, 1), (v, 0), (-v, 1)]:
+                expr = make_expr(a, b, op)
+                if verify(expr): edge_pool.append(expr)
+
     random.shuffle(edge_pool)
     for expr in edge_pool[:int(n * edge_ratio)]:
         samples.add(expr)
@@ -129,7 +148,7 @@ def report(samples):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--n",    type=int, default=100000, help="total train samples")
+    parser.add_argument("--n",    type=int, default=1200000, help="total train samples")
     parser.add_argument("--x",    type=int, default=10,    help="val samples per bucket cell")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
