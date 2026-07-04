@@ -8,6 +8,62 @@ You don't need to decide this yet, but keep it in mind for when you design the d
 
 -999+999=-000000
 
+➜  llm-calc git:(main) ✗ /Users/vimal.chaudhari/.pyenv/versions/3.10.18/bin/python /Users/vimal.chaudhari/Downloads/vimalkeshu/llm-calc/pretrain.py           
+device: mps
+parameters: 795,520
+epoch   1/50  train_loss=2.1287  val_loss=1.9292
+epoch   2/50  train_loss=1.7954  val_loss=1.8097
+epoch   3/50  train_loss=1.7312  val_loss=1.7244
+epoch   4/50  train_loss=1.6764  val_loss=1.6364
+epoch   5/50  train_loss=1.5681  val_loss=1.5146
+epoch   6/50  train_loss=1.5006  val_loss=1.4604
+epoch   7/50  train_loss=1.4719  val_loss=1.4367
+epoch   8/50  train_loss=1.4555  val_loss=1.4188
+epoch   9/50  train_loss=1.4445  val_loss=1.4169
+epoch  10/50  train_loss=1.4361  val_loss=1.4044
+epoch  11/50  train_loss=1.4292  val_loss=1.4032
+epoch  12/50  train_loss=1.4237  val_loss=1.3929
+epoch  13/50  train_loss=1.4191  val_loss=1.3885
+epoch  14/50  train_loss=1.4152  val_loss=1.3866
+epoch  15/50  train_loss=1.4120  val_loss=1.3801
+epoch  16/50  train_loss=1.4090  val_loss=1.3784
+epoch  17/50  train_loss=1.4060  val_loss=1.3782
+epoch  18/50  train_loss=1.4030  val_loss=1.3742
+epoch  19/50  train_loss=1.4001  val_loss=1.3705
+epoch  20/50  train_loss=1.3970  val_loss=1.3639
+epoch  21/50  train_loss=1.3941  val_loss=1.3632
+epoch  22/50  train_loss=1.3915  val_loss=1.3609
+epoch  23/50  train_loss=1.3890  val_loss=1.3609
+epoch  24/50  train_loss=1.3865  val_loss=1.3569
+epoch  25/50  train_loss=1.3842  val_loss=1.3541
+epoch  26/50  train_loss=1.3821  val_loss=1.3520
+epoch  27/50  train_loss=1.3802  val_loss=1.3506
+epoch  28/50  train_loss=1.3782  val_loss=1.3513
+epoch  29/50  train_loss=1.3764  val_loss=1.3501
+epoch  30/50  train_loss=1.3748  val_loss=1.3485
+epoch  31/50  train_loss=1.3732  val_loss=1.3474
+epoch  32/50  train_loss=1.3717  val_loss=1.3458
+epoch  33/50  train_loss=1.3703  val_loss=1.3442
+epoch  34/50  train_loss=1.3690  val_loss=1.3432
+epoch  35/50  train_loss=1.3676  val_loss=1.3415
+epoch  36/50  train_loss=1.3665  val_loss=1.3418
+epoch  37/50  train_loss=1.3656  val_loss=1.3431
+epoch  38/50  train_loss=1.3645  val_loss=1.3405
+epoch  39/50  train_loss=1.3637  val_loss=1.3408
+epoch  40/50  train_loss=1.3627  val_loss=1.3389
+epoch  41/50  train_loss=1.3621  val_loss=1.3399
+epoch  42/50  train_loss=1.3614  val_loss=1.3395
+epoch  43/50  train_loss=1.3609  val_loss=1.3400
+epoch  44/50  train_loss=1.3604  val_loss=1.3400
+epoch  45/50  train_loss=1.3600  val_loss=1.3394
+epoch  46/50  train_loss=1.3596  val_loss=1.3398
+epoch  47/50  train_loss=1.3595  val_loss=1.3401
+epoch  48/50  train_loss=1.3594  val_loss=1.3403
+epoch  49/50  train_loss=1.3592  val_loss=1.3402
+epoch  50/50  train_loss=1.3591  val_loss=1.3402
+saved -> final.pt
+
+
   Suggested smaller configs:
 
   ┌───────────────────┬─────────┬─────────┬─────────┐
