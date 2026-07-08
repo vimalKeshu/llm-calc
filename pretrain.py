@@ -110,6 +110,7 @@ def eval(args):
         cfg = yaml.safe_load(f)    
 
     mc = cfg["model"]
+    eval_config = cfg["eval"]
 
     if torch.cuda.is_available():
         device = torch.device('cuda')
@@ -127,72 +128,15 @@ def eval(args):
                             n_layers=mc["n_layers"],
                             dropout=mc["dropout"],
                         ).to(device)
-    model.load_state_dict(torch.load(cfg["train"]["checkpoint_path"], map_location=device))
+    model.load_state_dict(torch.load(eval_config["checkpoint_path"], map_location=device))
     model.eval()
     stoi, itos = V.build_vocab()
 
-    # tests = (["2+2=", 
-    #           "2-2=", 
-    #           "-2+2=", 
-    #           "2*2=", 
-    #           "100*2=", 
-    #           "100/2=", 
-    #           "9/2=", 
-    #           "-5-2=", 
-    #           "5-2=", 
-    #           "-5+2=", 
-    #           "333*333=", 
-    #           "333*3=", 
-    #           "333+333=", 
-    #           "333/333="])
+    with open(eval_config['data_path']) as f:
+        eval_data = yaml.safe_load(f)  
 
-    tests = ([
-      # --- carry propagation ---
-      "999+1=",       # crosses digit boundary → 1000
-      "999+999=",     # max addition → 1998
-      "100-1=",       # borrow across zeros
-
-      # --- large multiplication ---
-      "999*999=",     # max → 998001
-      "123*456=",     # irregular digits
-      "500*200=",     # trailing zeros
-
-      # --- subtraction producing negatives ---
-      "1-999=",       # large negative result
-      "100-999=",
-      "5-9=",
-
-      # --- negative operand all ops ---
-      "-333+100=",
-      "-333*3=",
-      "-333/3=",
-      "-999+999=",    # should be 0
-
-      # --- decimal division (repeating) ---
-      "1/3=",         # 0.333
-      "2/3=",         # 0.667
-      "10/3=",        # 3.333
-      "100/7=",       # 14.286
-      "1/7=",         # 0.143
-
-      # --- zero edge cases ---
-      "0*999=",
-      "0/999=",
-      "999*0=",
-      "999-999=",     # should be 0
-
-      # --- identity / trivial ---
-      "999+0=",
-      "999*1=",
-      "999/1=",
-      "999/999=",     # should be 1
-
-      # --- cross-bucket hard ---
-      "9*999=",       # 8991
-      "999*9=",       # 8991 — symmetric, tests both orderings
-      "99*99=",       # 9801
-      "-99*99=",
-    ])
+    tests = eval_data['data']
+    temp = eval_config['temp']
     max_seq_len=int(mc["max_seq_len"])
     with torch.no_grad():
         for test in tests:
@@ -203,7 +147,11 @@ def eval(args):
                 causal_mask = torch.tril(torch.ones(input_tensor.shape[1], input_tensor.shape[1])).unsqueeze(0).to(device)
                 output_tensor = model(input_tensor, causal_mask)
                 output_tensor = output_tensor[:, -1, :]   # (1, vocab_size)
-                next_token = output_tensor.argmax(dim=-1) # the predicted token id
+                if temp is None or temp == 0.0:
+                    next_token = output_tensor.argmax(dim=-1) # the predicted token id
+                else:
+                    probs = nn.functional.softmax(output_tensor/temp, dim=-1)
+                    next_token = torch.multinomial(probs, 1)
                 # print(f'next_token: {next_token.item()} , end of sequence: {stoi[V.EOS]}')
                 if next_token == stoi[V.EOS]:
                     break

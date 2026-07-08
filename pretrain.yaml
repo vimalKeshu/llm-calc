@@ -13,3 +13,8 @@ train:
   lr: 3e-4
   # checkpoint_path: checkpoint.pt
   checkpoint_path: 136.pt  
+
+eval:
+  data_path: pretrain_eval.yaml
+  temp: 1
+  checkpoint_path: 136.pt
