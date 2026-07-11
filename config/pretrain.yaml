@@ -1,0 +1,20 @@
+model:
+  vocab_size: 21        # len(vocab.TOKENS) = 4 special + 10 digits + 4 ops + 3 symbols
+  max_seq_len: 18
+  d_model: 64
+  attention_heads: 4
+  n_layers: 3
+  dropout: 0.05
+
+train:
+  data_path: sample/pretrain.jsonl
+  batch_size: 64
+  epochs: 150
+  lr: 3e-4
+  checkpoint_path: ckp/final.pt
+
+eval:
+  data_path: config/pretrain_eval.yaml
+  temp: 0        # greedy for accuracy eval; use temp>0 only for pass@k probing
+  reverse: false
+  checkpoint_path: ckp/final.pt

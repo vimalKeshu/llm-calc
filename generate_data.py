@@ -326,12 +326,12 @@ def build_eval(per_tier, neg_ratio):
 
 
 # --- assembling the train set -------------------------------------------------
-# Target training FREQUENCY per tier (a pyramid: fundamentals are seen often,
-# the hard corner is covered but not allowed to dominate). Small tiers have few
-# unique samples, so compose() repeats them (sampling with replacement) to reach
-# these frequencies -- the model needs many passes over the basics to master
-# them, independent of how many unique easy expressions exist.
-TIER_DIST = {0: 0.12, 1: 0.13, 2: 0.30, 3: 0.30, 4: 0.15}
+# Optimise the worst category rather than average accuracy. The easy categories
+# saturate early, so most examples are allocated to the two categories that
+# require algorithmic generalisation. Sampling is also balanced by operation
+# inside every tier; the old tier-only sampling left some tier/op cells with as
+# few as 4.6k examples while others had 54k.
+TIER_DIST = {0: 0.05, 1: 0.10, 2: 0.15, 3: 0.30, 4: 0.40}
 
 
 def build_pools(n, exclude, neg_ratio, corner_frac=0.04):
@@ -369,16 +369,20 @@ def build_pools(n, exclude, neg_ratio, corner_frac=0.04):
 
 
 def compose(pools, n):
-    """Sample `n` rows from the pools at TIER_DIST frequencies, WITH replacement
-    (so small tiers repeat to their target share). Returns (a,b,op,result)."""
+    """Sample `n` rows, balanced by op within the hard-focused tier mix."""
     rows = []
-    for t in range(5):
-        items = list(pools[t].items())
-        if not items:
-            continue
-        target = int(n * TIER_DIST[t])
-        for (a, b, op), r in random.choices(items, k=target):
-            rows.append((a, b, op, r))
+    tier_targets = {t: int(n * TIER_DIST[t]) for t in range(5)}
+    tier_targets[4] += n - sum(tier_targets.values())
+    for t, target in tier_targets.items():
+        per_op, remainder = divmod(target, len(V.OPERATORS))
+        for op_index, op in enumerate(V.OPERATORS):
+            items = [(key, result) for key, result in pools[t].items()
+                     if key[2] == op]
+            if not items:
+                raise RuntimeError(f"empty data pool for tier={t}, op={op}")
+            count = per_op + (op_index < remainder)
+            for (a, b, sampled_op), result in random.choices(items, k=count):
+                rows.append((a, b, sampled_op, result))
     random.shuffle(rows)
     return rows
 
@@ -406,7 +410,7 @@ def main():
     ap.add_argument("--eval-per-tier", type=int, default=150)
     ap.add_argument("--neg-ratio", type=float, default=0.2)
     ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--out", default="pretrain.jsonl")
+    ap.add_argument("--out", default="sample/pretrain.jsonl")
     ap.add_argument("--no-reverse", action="store_true",
                     help="store answers left-to-right instead of reversed")
     args = ap.parse_args()

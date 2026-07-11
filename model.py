@@ -155,7 +155,10 @@ class DecoderBlock(nn.Module):
         self.layer_norm_1 = RMSLayerNormalization(d_model=d_model, eps=eps)
         self.layer_norm_2 = RMSLayerNormalization(d_model=d_model, eps=eps)
         self.attn = MultiHeadAttentionBlock(max_seq_len, d_model, attention_heads, dropout)
-        self.ffn = MLP(d_model, d_ff)
+        # Keep attention and MLP regularisation under the same config value.
+        # Previously MLP silently used its 0.5 default even when the model was
+        # configured with dropout=0.05.
+        self.ffn = MLP(d_model, d_ff, dropout)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x: torch.Tensor, mask: torch.Tensor):
@@ -202,6 +205,59 @@ class LLMCalcModel(nn.Module):
         return x 
 
 
+class LoopLlmCalc(nn.Module):
+    """Looped (recursive) variant of the calculator model.
+
+    Reuses the building blocks from model.py, but instead of stacking `n_layers`
+    distinct decoder blocks it applies a small stack `n_loops` times, sharing the
+    same weights across iterations. Effective depth = n_layers * n_loops, while the
+    parameter count stays that of just `n_layers` blocks -- cheap depth for the
+    sequential carry/borrow chains that hard arithmetic needs. A per-iteration
+    `step_emb` lets each pass know which loop it is (Universal-Transformer style).
+    """
+    def __init__(self,
+                 vocab_size: int,
+                 max_seq_len: int,
+                 d_model: int,
+                 attention_heads: int,
+                 n_layers: int,
+                 n_loops: int = 1,
+                 eps: float = 1e-6,
+                 dropout: float = 0.5) -> None:
+        super().__init__()
+        if n_loops < 1:
+            raise ValueError("n_loops must be >= 1")
+        self.n_loops = n_loops
+        self.embedding = WordEmbeddings(d_model, vocab_size)
+        self.decoder_layers = nn.ModuleList(
+            [DecoderBlock(max_seq_len, d_model, attention_heads, 4 * d_model, eps, dropout)
+             for _ in range(n_layers)])
+        self.step_emb = nn.Embedding(n_loops, d_model)      # per-iteration signal
+        self.register_buffer("loop_ids", torch.arange(n_loops), persistent=False)
+        self.layer_norm = RMSLayerNormalization(d_model)
+        self.projection = nn.Linear(d_model, vocab_size, bias=False)
+
+    def forward(self, x: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+        x = self.embedding(x)
+        for t in range(self.n_loops):
+            x = x + self.step_emb(self.loop_ids[t])
+            for decoder in self.decoder_layers:
+                x = decoder(x, mask)
+        x = self.layer_norm(x)
+        return self.projection(x)
+
+def build_model(mc: dict) -> nn.Module:
+    """Build the looped model when the config sets n_loops > 1, else the plain
+    LLMCalcModel. Lets pretrain.py / eval.py stay arch-agnostic."""
+    common = dict(vocab_size=mc["vocab_size"], max_seq_len=mc["max_seq_len"],
+                  d_model=mc["d_model"], attention_heads=mc["attention_heads"],
+                  n_layers=mc["n_layers"], dropout=mc["dropout"])
+    n_loops = mc.get("n_loops", 1)
+    if n_loops > 1:
+        return LoopLlmCalc(n_loops=n_loops, **common)
+    return LLMCalcModel(**common)
+
+
 if '__main__' == __name__:
     calc: LLMCalcModel = LLMCalcModel(vocab_size=32, 
                                       max_seq_len=8, 
@@ -225,10 +281,17 @@ if '__main__' == __name__:
     #     Total              = 264
     # Model params:
     # 0256 + 3296 + 0264 = 3816
+
     total = 0
     for p in calc.parameters():
         total += p.numel()
     print("total params:", total)    
+
+
+    # m = LoopLlmCalc(vocab_size=21, max_seq_len=18, d_model=64,
+    #                 attention_heads=4, n_layers=2, n_loops=4)
+    # print("params:", f"{sum(p.numel() for p in m.parameters()):,}",
+    #       "| effective depth:", m.n_loops * len(m.decoder_layers))
 
 
 
@@ -241,4 +304,3 @@ if '__main__' == __name__:
 
 
     
-

@@ -200,7 +200,7 @@ epoch  80/80  train_loss=1.5538  val_loss=1.6345
 saved -> 136.pt
 
 
-➜  llm-calc git:(main) ✗ python pretrain.py --config pretrain_128x4.yaml
+➜  llm-calc git:(main) ✗ python pretrain.py --config config/pretrain_128x4.yaml
 device: mps
 parameters: 795,520
 epoch   1/150  train_loss=2.5600  val_loss=2.0395
@@ -354,3 +354,172 @@ epoch 148/150  train_loss=1.2847  val_loss=1.4294
 epoch 149/150  train_loss=1.2846  val_loss=1.4294
 epoch 150/150  train_loss=1.2847  val_loss=1.4294
 saved -> final_128x4.pt
+
+
+➜  llm-calc git:(main) ✗ python pretrain.py --config config/pretrain_256x6.yaml
+device: mps
+parameters: 4,740,352
+epoch   1/150  train_loss=2.3315  val_loss=1.9035
+epoch   2/150  train_loss=1.8329  val_loss=1.8022
+epoch   3/150  train_loss=1.7335  val_loss=1.7060
+epoch   4/150  train_loss=1.6592  val_loss=1.6322
+epoch   5/150  train_loss=1.6044  val_loss=1.5919
+epoch   6/150  train_loss=1.5654  val_loss=1.5574
+epoch   7/150  train_loss=1.5266  val_loss=1.5076
+epoch   8/150  train_loss=1.4675  val_loss=1.4553
+epoch   9/150  train_loss=1.4197  val_loss=1.4243
+epoch  10/150  train_loss=1.3914  val_loss=1.4129
+epoch  11/150  train_loss=1.3723  val_loss=1.4061
+epoch  12/150  train_loss=1.3582  val_loss=1.4005
+epoch  13/150  train_loss=1.3470  val_loss=1.3968
+epoch  14/150  train_loss=1.3381  val_loss=1.3994
+epoch  15/150  train_loss=1.3311  val_loss=1.4046
+epoch  16/150  train_loss=1.3247  val_loss=1.4097
+epoch  17/150  train_loss=1.3183  val_loss=1.4059
+epoch  18/150  train_loss=1.3132  val_loss=1.4159
+epoch  19/150  train_loss=1.3084  val_loss=1.4158
+epoch  20/150  train_loss=1.3041  val_loss=1.4231
+epoch  21/150  train_loss=1.3005  val_loss=1.4191
+epoch  22/150  train_loss=1.2966  val_loss=1.4233
+epoch  23/150  train_loss=1.2929  val_loss=1.4163
+epoch  24/150  train_loss=1.2890  val_loss=1.4164
+epoch  25/150  train_loss=1.2856  val_loss=1.4119
+epoch  26/150  train_loss=1.2827  val_loss=1.4185
+epoch  27/150  train_loss=1.2801  val_loss=1.4228
+epoch  28/150  train_loss=1.2775  val_loss=1.4177
+epoch  29/150  train_loss=1.2752  val_loss=1.4192
+epoch  30/150  train_loss=1.2731  val_loss=1.4275
+epoch  31/150  train_loss=1.2708  val_loss=1.4283
+epoch  32/150  train_loss=1.2689  val_loss=1.4263
+epoch  33/150  train_loss=1.2669  val_loss=1.4187
+epoch  34/150  train_loss=1.2650  val_loss=1.4259
+epoch  35/150  train_loss=1.2634  val_loss=1.4190
+epoch  36/150  train_loss=1.2616  val_loss=1.4316
+epoch  37/150  train_loss=1.2599  val_loss=1.4266
+epoch  38/150  train_loss=1.2582  val_loss=1.4283
+epoch  39/150  train_loss=1.2567  val_loss=1.4263
+epoch  40/150  train_loss=1.2553  val_loss=1.4306
+epoch  41/150  train_loss=1.2540  val_loss=1.4441
+epoch  42/150  train_loss=1.2526  val_loss=1.4370
+epoch  43/150  train_loss=1.2512  val_loss=1.4458
+epoch  44/150  train_loss=1.2499  val_loss=1.4477
+epoch  45/150  train_loss=1.2486  val_loss=1.4407
+epoch  46/150  train_loss=1.2474  val_loss=1.4463
+epoch  47/150  train_loss=1.2460  val_loss=1.4463
+epoch  48/150  train_loss=1.2448  val_loss=1.4515
+epoch  49/150  train_loss=1.2438  val_loss=1.4434
+epoch  50/150  train_loss=1.2423  val_loss=1.4387
+epoch  51/150  train_loss=1.2412  val_loss=1.4432
+epoch  52/150  train_loss=1.2400  val_loss=1.4570
+epoch  53/150  train_loss=1.2388  val_loss=1.4631
+epoch  54/150  train_loss=1.2375  val_loss=1.4571
+epoch  55/150  train_loss=1.2364  val_loss=1.4658
+epoch  56/150  train_loss=1.2353  val_loss=1.4422
+epoch  57/150  train_loss=1.2342  val_loss=1.4632
+epoch  58/150  train_loss=1.2328  val_loss=1.4613
+epoch  59/150  train_loss=1.2318  val_loss=1.4652
+epoch  60/150  train_loss=1.2305  val_loss=1.4668
+epoch  61/150  train_loss=1.2294  val_loss=1.4606
+epoch  62/150  train_loss=1.2283  val_loss=1.4700
+epoch  63/150  train_loss=1.2270  val_loss=1.4821
+epoch  64/150  train_loss=1.2259  val_loss=1.4691
+epoch  65/150  train_loss=1.2248  val_loss=1.4818
+epoch  66/150  train_loss=1.2237  val_loss=1.4728
+epoch  67/150  train_loss=1.2224  val_loss=1.4764
+epoch  68/150  train_loss=1.2214  val_loss=1.4817
+epoch  69/150  train_loss=1.2201  val_loss=1.4761
+epoch  70/150  train_loss=1.2191  val_loss=1.4808
+epoch  71/150  train_loss=1.2180  val_loss=1.4944
+epoch  72/150  train_loss=1.2167  val_loss=1.4837
+epoch  73/150  train_loss=1.2159  val_loss=1.4927
+epoch  74/150  train_loss=1.2147  val_loss=1.4954
+epoch  75/150  train_loss=1.2136  val_loss=1.4897
+epoch  76/150  train_loss=1.2123  val_loss=1.4998
+epoch  77/150  train_loss=1.2114  val_loss=1.4959
+epoch  78/150  train_loss=1.2101  val_loss=1.4936
+epoch  79/150  train_loss=1.2091  val_loss=1.5037
+epoch  80/150  train_loss=1.2080  val_loss=1.5010
+epoch  81/150  train_loss=1.2071  val_loss=1.5024
+epoch  82/150  train_loss=1.2059  val_loss=1.5004
+epoch  83/150  train_loss=1.2048  val_loss=1.5106
+epoch  84/150  train_loss=1.2040  val_loss=1.5124
+epoch  85/150  train_loss=1.2027  val_loss=1.5173
+epoch  86/150  train_loss=1.2017  val_loss=1.4995
+epoch  87/150  train_loss=1.2009  val_loss=1.5083
+epoch  88/150  train_loss=1.1999  val_loss=1.5164
+epoch  89/150  train_loss=1.1987  val_loss=1.5179
+epoch  90/150  train_loss=1.1978  val_loss=1.5234
+epoch  91/150  train_loss=1.1970  val_loss=1.5315
+epoch  92/150  train_loss=1.1959  val_loss=1.5281
+epoch  93/150  train_loss=1.1949  val_loss=1.5275
+epoch  94/150  train_loss=1.1941  val_loss=1.5267
+epoch  95/150  train_loss=1.1932  val_loss=1.5288
+epoch  96/150  train_loss=1.1922  val_loss=1.5286
+epoch  97/150  train_loss=1.1912  val_loss=1.5298
+epoch  98/150  train_loss=1.1902  val_loss=1.5325
+epoch  99/150  train_loss=1.1892  val_loss=1.5429
+epoch 100/150  train_loss=1.1888  val_loss=1.5305
+epoch 101/150  train_loss=1.1876  val_loss=1.5328
+epoch 102/150  train_loss=1.1868  val_loss=1.5352
+epoch 103/150  train_loss=1.1862  val_loss=1.5483
+epoch 104/150  train_loss=1.1854  val_loss=1.5437
+epoch 105/150  train_loss=1.1843  val_loss=1.5447
+epoch 106/150  train_loss=1.1836  val_loss=1.5509
+epoch 107/150  train_loss=1.1829  val_loss=1.5484
+epoch 108/150  train_loss=1.1820  val_loss=1.5528
+epoch 109/150  train_loss=1.1813  val_loss=1.5576
+epoch 110/150  train_loss=1.1803  val_loss=1.5495
+epoch 111/150  train_loss=1.1797  val_loss=1.5608
+epoch 112/150  train_loss=1.1791  val_loss=1.5567
+epoch 113/150  train_loss=1.1784  val_loss=1.5595
+epoch 114/150  train_loss=1.1776  val_loss=1.5649
+epoch 115/150  train_loss=1.1771  val_loss=1.5593
+epoch 116/150  train_loss=1.1764  val_loss=1.5592
+epoch 117/150  train_loss=1.1757  val_loss=1.5612
+epoch 118/150  train_loss=1.1753  val_loss=1.5669
+epoch 119/150  train_loss=1.1747  val_loss=1.5645
+epoch 120/150  train_loss=1.1743  val_loss=1.5670
+epoch 121/150  train_loss=1.1736  val_loss=1.5645
+epoch 122/150  train_loss=1.1732  val_loss=1.5681
+epoch 123/150  train_loss=1.1725  val_loss=1.5711
+epoch 124/150  train_loss=1.1723  val_loss=1.5672
+epoch 125/150  train_loss=1.1716  val_loss=1.5703
+epoch 126/150  train_loss=1.1712  val_loss=1.5731
+epoch 127/150  train_loss=1.1707  val_loss=1.5725
+epoch 128/150  train_loss=1.1703  val_loss=1.5764
+epoch 129/150  train_loss=1.1702  val_loss=1.5727
+epoch 130/150  train_loss=1.1697  val_loss=1.5781
+epoch 131/150  train_loss=1.1694  val_loss=1.5759
+epoch 132/150  train_loss=1.1690  val_loss=1.5761
+epoch 133/150  train_loss=1.1689  val_loss=1.5784
+epoch 134/150  train_loss=1.1686  val_loss=1.5793
+epoch 135/150  train_loss=1.1683  val_loss=1.5790
+epoch 136/150  train_loss=1.1679  val_loss=1.5806
+epoch 137/150  train_loss=1.1679  val_loss=1.5781
+epoch 138/150  train_loss=1.1677  val_loss=1.5794
+epoch 139/150  train_loss=1.1675  val_loss=1.5777
+epoch 140/150  train_loss=1.1674  val_loss=1.5787
+epoch 141/150  train_loss=1.1673  val_loss=1.5781
+epoch 142/150  train_loss=1.1670  val_loss=1.5792
+epoch 143/150  train_loss=1.1668  val_loss=1.5800
+^CTraceback (most recent call last):
+
+
+┌───────────┬───────────┬──────────┬─────────────────┐
+│ op / tier │   128×4   │  256×6   │                 │
+├───────────┼───────────┼──────────┼─────────────────┤
+│ hardest   │ 36.0%     │ 51.6%    │ ↑↑ scale helped │
+├───────────┼───────────┼──────────┼─────────────────┤
+│ hard      │ 74.7%     │ 83.3%    │ ↑↑              │
+├───────────┼───────────┼──────────┼─────────────────┤
+│ *         │ 71.2%     │ 80.8%    │ ↑↑              │
+├───────────┼───────────┼──────────┼─────────────────┤
+│ /         │ 65.0%     │ 66.9%    │ ~frozen         │
+├───────────┼───────────┼──────────┼─────────────────┤
+│ +/−       │ 96.7/94.1 │ 100/97.9 │ ↑               │
+└───────────┴───────────┴──────────┴─────────────────┘
+
+
+- 32×8 (deep but narrow) had multiplication at only 56.8% and hardest 31% — so depth alone didn't crack it. 
+  A deep-but-thin model still failed multiplication.
+- 128×4 → 256×6 (getting wider) pushed multiplication 71% → 81% and hardest 36% → 52%.

@@ -3,9 +3,10 @@ import torch
 import argparse
 import json
 import collections
+from functools import lru_cache
 import vocab as V
 from generate_data import reverse_answer, should_reverse, unreverse_answer, TIER_NAMES, compute
-from model import LLMCalcModel
+from model import build_model
  
 
 @torch.no_grad()
@@ -45,11 +46,7 @@ def pick_device():
 
 
 def load_model(cfg, checkpoint, device):
-    mc = cfg["model"]
-    model = LLMCalcModel(
-        vocab_size=mc["vocab_size"], max_seq_len=mc["max_seq_len"],
-        d_model=mc["d_model"], attention_heads=mc["attention_heads"],
-        n_layers=mc["n_layers"], dropout=mc["dropout"]).to(device)
+    model = build_model(cfg["model"]).to(device)
     model.load_state_dict(torch.load(checkpoint, map_location=device))
     model.eval()
     return model
@@ -66,11 +63,22 @@ def true_answer(text, reverse=True):
     return stored
 
 
+@lru_cache(maxsize=None)
+def load_val_rows(data_path):
+    """Parse and retain the small validation subset once per dataset path."""
+    rows = []
+    with open(data_path) as f:
+        for line in f:
+            row = json.loads(line)
+            if row["split"] == "val":
+                rows.append(row)
+    return tuple(rows)
+
+
 def tier_report(model, cfg, device, stoi, itos, reverse=True):
     """Greedy accuracy over the held-out val split, broken down by tier and op."""
     max_seq_len = int(cfg["model"]["max_seq_len"])
-    rows = [json.loads(l) for l in open(cfg["train"]["data_path"])
-            if json.loads(l)["split"] == "val"]
+    rows = load_val_rows(cfg["train"]["data_path"])
 
     by_tier, ok_tier = collections.Counter(), collections.Counter()
     by_op, ok_op = collections.Counter(), collections.Counter()
@@ -98,6 +106,11 @@ def tier_report(model, cfg, device, stoi, itos, reverse=True):
                   f"= {100*ok_op[op]/by_op[op]:5.1f}%")
     tot, okt = sum(by_tier.values()), sum(ok_tier.values())
     print(f"  overall    {okt:>4}/{tot:<4} = {100*okt/tot:5.1f}%")
+    return {
+        "tier": {t: ok_tier[t] / by_tier[t] for t in by_tier},
+        "op": {op: ok_op[op] / by_op[op] for op in by_op},
+        "overall": okt / tot,
+    }
 
 
 # prompts whose greedy answer is currently wrong (mult / division hard cases) --
@@ -170,9 +183,9 @@ def eval_model(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="pretrain.yaml")
+    parser.add_argument("--config", default="config/pretrain.yaml")
     parser.add_argument("--checkpoint", default=None,
-                        help="override the checkpoint in the config (e.g. 40.pt)")
+                        help="override the checkpoint in the config (e.g. ckp/40.pt)")
     parser.add_argument("--mode", choices=['demo', 'report', 'both', 'probe'],
                         default='both',
                         help="demo=prompt list, report=per-tier acc, probe=pass@k")

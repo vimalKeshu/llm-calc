@@ -172,13 +172,13 @@ def main():
     val_samples = generate_val(args.x)
     random.shuffle(val_samples)
 
-    with open("pretrain.jsonl", "w") as f:
+    with open("sample/pretrain.jsonl", "w") as f:
         for expr in train_samples:
             f.write(json.dumps({"text": expr, "split": "train"}) + "\n")
         for expr in val_samples:
             f.write(json.dumps({"text": expr, "split": "val"}) + "\n")
 
-    print(f"wrote {len(train_samples)} train + {len(val_samples)} val -> pretrain.jsonl")
+    print(f"wrote {len(train_samples)} train + {len(val_samples)} val -> sample/pretrain.jsonl")
     print("\ntrain:"); report(train_samples)
     print("\nval:");   report(val_samples)
 
