@@ -8,8 +8,10 @@ import math
 import vocab as V
 
 from model import LLMCalcModel
+from generate_data import reverse_answer
 from torch.optim.lr_scheduler import LambdaLR
 
+torch.manual_seed(42)
 
 
 def load_batches(data_path, stoi, max_seq_len, batch_size, split):
@@ -156,7 +158,10 @@ def eval(args):
                 if next_token == stoi[V.EOS]:
                     break
                 tokens.append(next_token.item())
-            print(V.decode(tokens, itos))        
+            ans = V.decode(tokens, itos)
+            if bool(eval_config['reverse']):
+                ans = reverse_answer(ans)
+            print(ans)                     
     
 
 def main():

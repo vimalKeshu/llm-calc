@@ -1,0 +1,20 @@
+model:
+  vocab_size: 21        # len(vocab.TOKENS) = 4 special + 10 digits + 4 ops + 3 symbols
+  max_seq_len: 18
+  d_model: 256
+  attention_heads: 8
+  n_layers: 6
+  dropout: 0.05
+
+train:
+  data_path: pretrain.jsonl
+  batch_size: 64
+  epochs: 150
+  lr: 3e-4
+  checkpoint_path: final_256x6.pt
+
+eval:
+  data_path: pretrain_eval.yaml
+  temp: 0
+  reverse: false
+  checkpoint_path: final_256x6.pt

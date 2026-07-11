@@ -104,6 +104,18 @@ def generate_train(n, clean_div_ratio=0.3, edge_ratio=0.05, neg_ratio=0.2):
         if verify(expr):
             samples.add(expr)
 
+    big_pool = []
+    for _ in range(int(n * 0.03)):          # ~3% of data -> ~12K samples
+        a = random.randint(800, 999)
+        b = random.randint(800, 999)
+        if random.random() < neg_ratio and a != 0:
+            a = -a
+        expr = make_expr(a, b, '*')
+        if verify(expr):
+            big_pool.append(expr)
+    samples.update(big_pool)            
+    
+
     return list(samples)[:n]
 
 
@@ -148,7 +160,7 @@ def report(samples):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--n",    type=int, default=1200000, help="total train samples")
+    parser.add_argument("--n",    type=int, default=400000, help="total train samples")
     parser.add_argument("--x",    type=int, default=10,    help="val samples per bucket cell")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()

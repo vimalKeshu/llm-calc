@@ -1,0 +1,20 @@
+model:
+  vocab_size: 21
+  max_seq_len: 18
+  d_model: 32
+  attention_heads: 4
+  n_layers: 6
+  dropout: 0.05
+
+train:
+  data_path: pretrain.jsonl
+  batch_size: 64
+  epochs: 40
+  lr: 3e-4
+  checkpoint_path: final_32x6.pt
+
+eval:
+  data_path: pretrain_eval.yaml
+  temp: 0
+  reverse: true
+  checkpoint_path: final_32x6.pt
