@@ -13,14 +13,17 @@ Produce a training set that teaches a small model arithmetic *easy -> hard*, wit
   3. A held-out eval set that is provably DISJOINT from train, so "passing"
      a hard case measures generalization, not leakage.
 
-Answer format
--------------
-Only the ANSWER's magnitude digits are reversed (least-significant digit first),
-e.g. 999*999=998001 is stored as "999*999=100899". Carries propagate right-to-
-left, so emitting the answer LSB-first lets the model produce each digit *after*
-the carry into it is known. The sign ('-') stays in front; the decimal point
-rides along and is reversible. Operands are left untouched.
-Use `unreverse_answer` on the model's output at eval time to read it back.
+Internal number format
+----------------------
+For addition, subtraction, and multiplication, every operand and answer
+magnitude is reversed so the units digit comes first. Signs stay in front. For
+example, 123+45=168 is stored as 321+54=861, and 500-123=377 is stored as
+005-321=773. Zeros created by reversal are meaningful and must be preserved.
+
+Division stays in natural order and uses a fixed DDD.ddd answer, e.g.
+1/3=000.333 and 6/3=002.000. This makes decimal-place embeddings stable during
+autoregressive generation. Evaluation converts all internal answers back to
+normal user-facing strings.
 """
 import argparse
 import json
@@ -58,36 +61,97 @@ def is_rounded_div(a, b, result):
     return abs(a / b - result) > 1e-9
 
 
-def reverse_answer(result):
-    """998001 -> '100899', -4 -> '-4', 3.333 -> '333.3'. Reverses only the
-    magnitude; sign prefix is preserved. Reversible."""
-    s = str(result)
+def reverse_magnitude(value):
+    """Reverse magnitude digits while preserving an optional leading sign."""
+    s = str(value)
     neg = s.startswith('-')
     mag = s[1:] if neg else s
     return ('-' if neg else '') + mag[::-1]
 
 
-def unreverse_answer(ans):
-    """Inverse of reverse_answer. Reversal is its own inverse on the magnitude,
-    so this just flips it back. Used at eval time to decode model output."""
-    neg = ans.startswith('-')
-    mag = ans[1:] if neg else ans
+def unreverse_magnitude(value):
+    """Inverse of :func:`reverse_magnitude`."""
+    neg = value.startswith('-')
+    mag = value[1:] if neg else value
     return ('-' if neg else '') + mag[::-1]
 
 
+def reverse_answer(result):
+    """Backward-compatible name for reversing an integer answer magnitude."""
+    return reverse_magnitude(result)
+
+
+def unreverse_answer(ans):
+    """Backward-compatible name for decoding a reversed integer answer."""
+    return unreverse_magnitude(ans)
+
+
 def should_reverse(op):
-    """Reversal is disabled: all answers are stored left-to-right (natural).
-    Digit reversal is a small, capacity-dependent trick for helping tiny direct
-    models emit carries in output order; on this model the additive ops are
-    already ~99% and reversal never addressed the real ceiling (multiplication /
-    division), so it was dropped to keep the data and pipeline simple."""
-    return False
+    """Integer column algorithms use the paper's units-first representation."""
+    return op in ('+', '-', '*')
+
+
+def format_division_answer(result):
+    """Format a rounded quotient as the fixed internal DDD.ddd representation."""
+    value = float(result)
+    sign = '-' if value < 0 else ''
+    magnitude = abs(value)
+    if magnitude >= 1000:
+        raise ValueError(
+            f"division result {result!r} does not fit the DDD.ddd format")
+    return sign + f"{magnitude:07.3f}"
+
+
+def normalize_division_answer(answer):
+    """Convert an internal DDD.ddd quotient to a user-facing decimal string."""
+    try:
+        value = float(answer)
+    except ValueError:
+        return answer
+    if value == 0:
+        return '0'
+    if value.is_integer():
+        return str(int(value))
+    return f"{value:.3f}".rstrip('0').rstrip('.')
+
+
+def encode_prompt(prompt, internal_format=True):
+    """Convert a natural prompt such as ``123+45=`` to the model's format."""
+    if not internal_format:
+        return prompt
+    suffix = '=' if prompt.endswith('=') else ''
+    lhs = prompt[:-1] if suffix else prompt
+    op = next((candidate for candidate in V.OPERATORS
+               if lhs.find(candidate, 1) != -1), None)
+    if op is None:
+        raise ValueError(f"could not find arithmetic operator in {prompt!r}")
+    op_index = lhs.find(op, 1)
+    left, right = lhs[:op_index], lhs[op_index + 1:]
+    if should_reverse(op):
+        left = reverse_magnitude(left)
+        right = reverse_magnitude(right)
+    return f"{left}{op}{right}{suffix}"
+
+
+def decode_internal_answer(op, answer, internal_format=True):
+    """Convert a generated/stored internal answer to normal user-facing form."""
+    if not internal_format:
+        return answer
+    if should_reverse(op):
+        return unreverse_magnitude(answer)
+    if op == '/':
+        return normalize_division_answer(answer)
+    return answer
 
 
 def make_text(a, b, op, result, reverse=True):
-    rev = reverse and should_reverse(op)
-    ans = reverse_answer(result) if rev else str(result)
-    return f"{a}{op}{b}={ans}"
+    """Create a natural expression or the agreed Abacus internal expression."""
+    if not reverse:
+        return f"{a}{op}{b}={result}"
+    if should_reverse(op):
+        return (f"{reverse_magnitude(a)}{op}{reverse_magnitude(b)}="
+                f"{reverse_magnitude(result)}")
+    return f"{a}{op}{b}={format_division_answer(result)}"
 
 
 def verify(a, b, op, result):
@@ -412,7 +476,7 @@ def main():
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out", default="sample/pretrain.jsonl")
     ap.add_argument("--no-reverse", action="store_true",
-                    help="store answers left-to-right instead of reversed")
+                    help="disable the Abacus internal number format")
     args = ap.parse_args()
     random.seed(args.seed)
     reverse = not args.no_reverse
@@ -422,16 +486,21 @@ def main():
     composed = compose(pools, args.n)
 
     rows = []
+    representation = "abacus-v1" if reverse else "natural-v1"
     for (a, b, op, r) in composed:
         t, score = classify(a, b, op, r)
         rows.append({"text": make_text(a, b, op, r, reverse),
-                     "split": "train", "tier": t, "difficulty": round(score, 4)})
+                     "split": "train", "tier": t,
+                     "difficulty": round(score, 4),
+                     "representation": representation})
 
     for (a, b, op) in eval_set:
         r = compute(a, b, op)
         t, score = classify(a, b, op, r)
         rows.append({"text": make_text(a, b, op, r, reverse),
-                     "split": "val", "tier": t, "difficulty": round(score, 4)})
+                     "split": "val", "tier": t,
+                     "difficulty": round(score, 4),
+                     "representation": representation})
 
     with open(args.out, "w") as f:
         for row in rows:
@@ -442,7 +511,7 @@ def main():
     reversed_ops = [op for op in V.OPERATORS if reverse and should_reverse(op)]
     rev_desc = ",".join(reversed_ops) if reversed_ops else "none (all natural)"
     print(f"wrote {n_train} train + {n_val} val -> {args.out} "
-          f"(reversed ops: {rev_desc})")
+          f"(reversed ops: {rev_desc}; fixed decimal division: {reverse})")
     print("\ntrain:"); report([r for r in rows if r["split"] == "train"])
     print("\nval:  "); report([r for r in rows if r["split"] == "val"])
 

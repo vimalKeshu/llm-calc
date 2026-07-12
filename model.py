@@ -3,6 +3,7 @@
 import torch
 import torch.nn as nn 
 import math 
+import vocab as V
 
 class WordEmbeddings(nn.Module):
 
@@ -16,6 +17,207 @@ class WordEmbeddings(nn.Module):
         # (batch, seq_len) --> (batch, seq_len, d_model)
         # multiply by sqrt(d_model) to scale the embeddings
         return self.embedding(x) * math.sqrt(self.d_model)
+
+
+class RandomizedAbacusEmbedding(nn.Module):
+    """Digit-place embeddings for the calculator's mixed number formats.
+
+    Integer +, -, and * samples are expected to contain reversed magnitudes, so
+    digit exponents increase from left to right inside every digit span:
+    ``321 -> [units, tens, hundreds] -> [0, 1, 2]``.
+
+    Division samples remain in natural order. Their digit exponents are derived
+    from the decimal point (or an implicit decimal point after an integer). The
+    answer is expected to use the fixed ``DDD.ddd`` format, which lets partial
+    autoregressive answer prefixes receive stable place IDs before the decimal
+    point has been generated.
+
+    During training a single scalar beta is shared by the whole batch. Shifting
+    every digit by the same beta trains higher embedding rows without breaking
+    the equality between corresponding arithmetic columns. Evaluation always
+    uses beta=0.
+    """
+
+    def __init__(self,
+                 d_model: int,
+                 digit_token_ids: list[int],
+                 division_token_id: int,
+                 equals_token_id: int,
+                 decimal_token_id: int,
+                 base: int = 4,
+                 max_offset: int = 16,
+                 min_decimal_exponent: int = -3,
+                 max_integer_exponent: int = 5,
+                 zero_offset_probability: float = 0.5) -> None:
+        super().__init__()
+        if base + min_decimal_exponent < 1:
+            raise ValueError(
+                "base must keep the smallest decimal place above reserved ID 0")
+        if max_offset < 0:
+            raise ValueError("max_offset must be >= 0")
+        if not 0.0 <= zero_offset_probability <= 1.0:
+            raise ValueError("zero_offset_probability must be in [0, 1]")
+
+        self.d_model = d_model
+        self.base = base
+        self.max_offset = max_offset
+        self.min_decimal_exponent = min_decimal_exponent
+        self.max_integer_exponent = max_integer_exponent
+        self.zero_offset_probability = zero_offset_probability
+        self.division_token_id = division_token_id
+        self.equals_token_id = equals_token_id
+        self.decimal_token_id = decimal_token_id
+
+        # ID 0 is reserved for tokens which are not digits. max_offset also
+        # provides unused-at-beta=0 rows for later length-extrapolation tests.
+        table_size = base + max_integer_exponent + max_offset + 1
+        self.embedding = nn.Embedding(table_size, d_model, padding_idx=0)
+        self.decimal_anchor = nn.Embedding(2, d_model, padding_idx=0)
+        self.register_buffer(
+            "digit_token_ids", torch.tensor(digit_token_ids), persistent=False)
+
+    def _digit_mask(self, input_ids: torch.Tensor) -> torch.Tensor:
+        return torch.isin(input_ids, self.digit_token_ids)
+
+    @staticmethod
+    def _previous(mask: torch.Tensor) -> torch.Tensor:
+        return torch.cat([torch.zeros_like(mask[:, :1]), mask[:, :-1]], dim=1)
+
+    @staticmethod
+    def _next(mask: torch.Tensor) -> torch.Tensor:
+        return torch.cat([mask[:, 1:], torch.zeros_like(mask[:, :1])], dim=1)
+
+    def _reversed_integer_exponents(
+            self, digit_mask: torch.Tensor) -> torch.Tensor:
+        """Return 0,1,2,... inside each reversed contiguous digit span."""
+        _, seq_len = digit_mask.shape
+        indices = torch.arange(
+            seq_len, device=digit_mask.device).unsqueeze(0).expand_as(digit_mask)
+        starts = digit_mask & ~self._previous(digit_mask)
+        last_start = torch.where(
+            starts, indices, torch.zeros_like(indices)).cummax(dim=1).values
+        return indices - last_start
+
+    def _natural_decimal_exponents(
+            self,
+            input_ids: torch.Tensor,
+            digit_mask: torch.Tensor,
+            division_rows: torch.Tensor) -> torch.Tensor:
+        """Return decimal exponents for natural-order division numbers."""
+        _, seq_len = input_ids.shape
+        indices = torch.arange(
+            seq_len, device=input_ids.device).unsqueeze(0).expand_as(input_ids)
+        decimal_mask = input_ids.eq(self.decimal_token_id)
+        numeric_mask = digit_mask | decimal_mask
+
+        starts = numeric_mask & ~self._previous(numeric_mask)
+        ends = numeric_mask & ~self._next(numeric_mask)
+        start_indices = torch.where(
+            starts, indices, torch.zeros_like(indices)).cummax(dim=1).values
+
+        end_candidates = torch.where(
+            ends, indices, torch.full_like(indices, seq_len))
+        end_indices = torch.cummin(
+            end_candidates.flip(1), dim=1).values.flip(1)
+
+        previous_dot = torch.where(
+            decimal_mask, indices, torch.full_like(indices, -1)
+        ).cummax(dim=1).values
+        next_dot_candidates = torch.where(
+            decimal_mask, indices, torch.full_like(indices, seq_len))
+        next_dot = torch.cummin(
+            next_dot_candidates.flip(1), dim=1).values.flip(1)
+
+        previous_dot_is_local = (
+            (previous_dot >= start_indices) & (previous_dot <= end_indices))
+        next_dot_is_local = (
+            (next_dot >= start_indices) & (next_dot <= end_indices))
+        decimal_indices = torch.where(
+            previous_dot_is_local,
+            previous_dot,
+            torch.where(next_dot_is_local, next_dot, end_indices + 1),
+        )
+
+        # Digits to the left of the decimal have exponents 0,1,2,... when
+        # counted from right to left. Digits to its right use -1,-2,-3,...
+        exponents = torch.where(
+            indices < decimal_indices,
+            decimal_indices - indices - 1,
+            decimal_indices - indices,
+        )
+
+        # During autoregressive division the decimal point is not visible when
+        # the first answer digits are embedded. The agreed DDD.ddd format gives
+        # them a known schedule: +2,+1,0,dot,-1,-2,-3.
+        equals_seen = input_ids.eq(self.equals_token_id).cumsum(dim=1).gt(0)
+        answer_numeric = numeric_mask & equals_seen & division_rows
+        answer_ordinal = answer_numeric.cumsum(dim=1) - 1
+        scheduled_answer_exponents = torch.where(
+            answer_ordinal <= 2,
+            2 - answer_ordinal,
+            3 - answer_ordinal,
+        )
+        return torch.where(
+            answer_numeric & digit_mask, scheduled_answer_exponents, exponents)
+
+    def _sample_beta(self, device: torch.device) -> torch.Tensor:
+        if not self.training or self.max_offset == 0:
+            return torch.zeros((), dtype=torch.long, device=device)
+
+        sampled = torch.randint(
+            0, self.max_offset + 1, (), dtype=torch.long, device=device)
+        force_zero = torch.rand((), device=device) < self.zero_offset_probability
+        return torch.where(force_zero, torch.zeros_like(sampled), sampled)
+
+    def position_ids(
+            self,
+            input_ids: torch.Tensor,
+            beta: int | torch.Tensor | None = None) -> torch.Tensor:
+        """Build the learned-embedding lookup IDs for a token batch.
+
+        ``beta`` is exposed for deterministic tests and diagnostics. Normal
+        training and inference should omit it.
+        """
+        digit_mask = self._digit_mask(input_ids)
+        division_rows = input_ids.eq(
+            self.division_token_id).any(dim=1, keepdim=True)
+
+        reversed_exponents = self._reversed_integer_exponents(digit_mask)
+        decimal_exponents = self._natural_decimal_exponents(
+            input_ids, digit_mask, division_rows)
+        exponents = torch.where(
+            division_rows, decimal_exponents, reversed_exponents)
+
+        if beta is None:
+            beta_tensor = self._sample_beta(input_ids.device)
+        else:
+            beta_tensor = torch.as_tensor(
+                beta, dtype=torch.long, device=input_ids.device)
+            if beta_tensor.numel() != 1:
+                raise ValueError("beta must be a scalar")
+
+        digit_position_ids = self.base + beta_tensor + exponents
+        position_ids = torch.where(
+            digit_mask, digit_position_ids, torch.zeros_like(digit_position_ids))
+
+        # Fail with a representation-specific error instead of an opaque
+        # embedding lookup failure if data violates the configured place range.
+        invalid = digit_mask & (
+            (position_ids <= 0) | (position_ids >= self.embedding.num_embeddings))
+        if torch.any(invalid):
+            invalid_id = position_ids[invalid][0].item()
+            raise ValueError(
+                f"Abacus position ID {invalid_id} is outside [1, "
+                f"{self.embedding.num_embeddings - 1}]; check number format "
+                "or increase the configured Abacus range")
+        return position_ids
+
+    def forward(self, input_ids: torch.Tensor) -> torch.Tensor:
+        positions = self.position_ids(input_ids)
+        place_features = self.embedding(positions)
+        decimal_features = self.decimal_anchor(
+            input_ids.eq(self.decimal_token_id).long())
+        return (place_features + decimal_features) * math.sqrt(self.d_model)
 
 class RMSLayerNormalization(nn.Module):
     """RMS Layer Normalization"""
@@ -183,9 +385,13 @@ class LLMCalcModel(nn.Module):
                  attention_heads: int,
                  n_layers: int,  
                  eps: float = 1e-6, 
-                 dropout: float = 0.5) -> None:
+                 dropout: float = 0.5,
+                 abacus_config: dict | None = None) -> None:
         super().__init__()
         self.embedding: nn.Module = WordEmbeddings(d_model, vocab_size)
+        self.abacus = (
+            RandomizedAbacusEmbedding(d_model=d_model, **abacus_config)
+            if abacus_config is not None else None)
         layers=[]
         for _ in range(n_layers):
             layers.append(DecoderBlock(max_seq_len, d_model, attention_heads, 4 * d_model, eps, dropout))
@@ -194,7 +400,10 @@ class LLMCalcModel(nn.Module):
         self.projection = nn.Linear(d_model, vocab_size, bias=False)
     
     def forward(self, x: torch.Tensor, mask: torch.Tensor):
-        x = self.embedding(x)
+        token_ids = x
+        x = self.embedding(token_ids)
+        if self.abacus is not None:
+            x = x + self.abacus(token_ids)
 
         for decoder in self.decoder_layers:
             x = decoder(x, mask)
@@ -223,12 +432,16 @@ class LoopLlmCalc(nn.Module):
                  n_layers: int,
                  n_loops: int = 1,
                  eps: float = 1e-6,
-                 dropout: float = 0.5) -> None:
+                 dropout: float = 0.5,
+                 abacus_config: dict | None = None) -> None:
         super().__init__()
         if n_loops < 1:
             raise ValueError("n_loops must be >= 1")
         self.n_loops = n_loops
         self.embedding = WordEmbeddings(d_model, vocab_size)
+        self.abacus = (
+            RandomizedAbacusEmbedding(d_model=d_model, **abacus_config)
+            if abacus_config is not None else None)
         self.decoder_layers = nn.ModuleList(
             [DecoderBlock(max_seq_len, d_model, attention_heads, 4 * d_model, eps, dropout)
              for _ in range(n_layers)])
@@ -238,7 +451,10 @@ class LoopLlmCalc(nn.Module):
         self.projection = nn.Linear(d_model, vocab_size, bias=False)
 
     def forward(self, x: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
-        x = self.embedding(x)
+        token_ids = x
+        x = self.embedding(token_ids)
+        if self.abacus is not None:
+            x = x + self.abacus(token_ids)
         for t in range(self.n_loops):
             x = x + self.step_emb(self.loop_ids[t])
             for decoder in self.decoder_layers:
@@ -249,9 +465,28 @@ class LoopLlmCalc(nn.Module):
 def build_model(mc: dict) -> nn.Module:
     """Build the looped model when the config sets n_loops > 1, else the plain
     LLMCalcModel. Lets pretrain.py / eval.py stay arch-agnostic."""
+    abacus_config = None
+    if mc.get("use_abacus", False):
+        stoi, _ = V.build_vocab()
+        abacus_config = dict(
+            digit_token_ids=[stoi[digit] for digit in V.DIGITS],
+            division_token_id=stoi['/'],
+            equals_token_id=stoi['='],
+            decimal_token_id=stoi['.'],
+            base=int(mc.get("abacus_base", 4)),
+            max_offset=int(mc.get("max_abacus_offset", 16)),
+            min_decimal_exponent=int(
+                mc.get("min_abacus_decimal_exponent", -3)),
+            max_integer_exponent=int(
+                mc.get("max_abacus_integer_exponent", 5)),
+            zero_offset_probability=float(
+                mc.get("abacus_zero_offset_probability", 0.5)),
+        )
+
     common = dict(vocab_size=mc["vocab_size"], max_seq_len=mc["max_seq_len"],
                   d_model=mc["d_model"], attention_heads=mc["attention_heads"],
-                  n_layers=mc["n_layers"], dropout=mc["dropout"])
+                  n_layers=mc["n_layers"], dropout=mc["dropout"],
+                  abacus_config=abacus_config)
     n_loops = mc.get("n_loops", 1)
     if n_loops > 1:
         return LoopLlmCalc(n_loops=n_loops, **common)

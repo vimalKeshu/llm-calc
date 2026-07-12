@@ -1,0 +1,65 @@
+class AbacusEmbedding(nn.Module):
+    def __init__(
+        self,
+        digit_token_ids,
+        d_model,
+        max_digit_run=12,
+        max_offset=16,
+    ):
+        super().__init__()
+        self.max_offset = max_offset
+        self.scale = math.sqrt(d_model)
+        self.table = nn.Embedding(
+            max_digit_run + max_offset + 1,
+            d_model,
+            padding_idx=0,
+        )
+        self.register_buffer(
+            "digit_ids",
+            torch.tensor(digit_token_ids),
+            persistent=False,
+        )
+
+    def forward(self, input_ids):
+        # True for character tokens 0...9.
+        is_digit = torch.isin(input_ids, self.digit_ids)
+
+        previous = torch.cat(
+            [torch.zeros_like(is_digit[:, :1]), is_digit[:, :-1]],
+            dim=1,
+        )
+        starts = is_digit & ~previous
+
+        batch, seq_len = input_ids.shape
+        indices = torch.arange(
+            seq_len, device=input_ids.device
+        ).expand(batch, -1)
+
+        last_start = torch.where(
+            starts, indices, torch.zeros_like(indices)
+        ).cummax(dim=1).values
+
+        positions = (indices - last_start + 1) * is_digit.long()
+
+        # One shared shift keeps corresponding columns aligned.
+        if self.training:
+            shift = torch.randint(
+                0, self.max_offset + 1, (),
+                device=input_ids.device,
+            )
+            positions = torch.where(
+                is_digit, positions + shift, positions
+            )
+
+        # Scale because your WordEmbeddings are also multiplied by sqrt(d_model).
+        return self.table(positions) * self.scale
+
+self.abacus = AbacusEmbedding(
+    digit_token_ids=range(4, 14),
+    d_model=d_model,
+    max_digit_run=12,
+    max_offset=16,
+)
+
+token_ids = x
+x = self.embedding(token_ids) + self.abacus(token_ids)

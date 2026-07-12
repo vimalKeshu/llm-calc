@@ -1,2 +1,0 @@
-# llm-calc
-LLM Calculator

@@ -14,11 +14,23 @@ from torch.optim.lr_scheduler import LambdaLR
 torch.manual_seed(42)
 
 
-def load_examples(data_path, stoi, max_seq_len, split):
+def load_examples(data_path, stoi, max_seq_len, split,
+                  expected_representation=None):
     pad_id = stoi[V.PAD]
+    texts = []
     with open(data_path) as f:
-        rows = (json.loads(line) for line in f)
-        texts = [row["text"] for row in rows if row["split"] == split]
+        for line in f:
+            row = json.loads(line)
+            if row["split"] != split:
+                continue
+            if (expected_representation is not None and
+                    row.get("representation") != expected_representation):
+                actual = row.get("representation", "missing")
+                raise ValueError(
+                    f"{data_path} uses representation {actual!r}, expected "
+                    f"{expected_representation!r}; regenerate it with "
+                    "generate_data.py before training")
+            texts.append(row["text"])
     if not texts:
         raise ValueError(f"no {split!r} examples found in {data_path}")
 
@@ -77,10 +89,14 @@ def train(args):
     print(f"device: {device}")
 
     stoi, itos = V.build_vocab()
+    expected_representation = (
+        "abacus-v1" if mc.get("use_abacus", False) else None)
     train_inputs, train_targets, train_mask = load_examples(
-        tc["data_path"], stoi, mc["max_seq_len"], "train")
+        tc["data_path"], stoi, mc["max_seq_len"], "train",
+        expected_representation=expected_representation)
     val_inputs, val_targets, val_mask = load_examples(
-        tc["data_path"], stoi, mc["max_seq_len"], "val")
+        tc["data_path"], stoi, mc["max_seq_len"], "val",
+        expected_representation=expected_representation)
     batch_size = int(tc["batch_size"])
     train_batch_count = math.ceil(len(train_inputs) / batch_size)
     val_batch_count = math.ceil(len(val_inputs) / batch_size)
@@ -145,8 +161,10 @@ def train(args):
             # token loss can improve while a single wrong digit still makes the
             # whole arithmetic answer incorrect.
             from eval import tier_report
+            internal_format = cfg["eval"].get(
+                "internal_format", cfg["eval"].get("reverse", True))
             metrics = tier_report(model, cfg, device, stoi, itos,
-                                  reverse=cfg["eval"].get("reverse", True))
+                                  reverse=internal_format)
             category_accuracies = [*metrics["tier"].values(),
                                    *metrics["op"].values()]
             min_accuracy = min(category_accuracies)
