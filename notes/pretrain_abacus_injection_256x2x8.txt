@@ -1,0 +1,179 @@
+➜  llm-calc git:(abacus_embedding) ✗ python pretrain.py --config config/pretrain_abacus_injection_256x2x8.yaml
+device: mps
+parameters: 1,596,672
+epoch   1/80  train_loss=1.7720  val_loss=1.2466
+epoch   2/80  train_loss=1.2030  val_loss=0.8162
+epoch   3/80  train_loss=0.8206  val_loss=0.3964
+epoch   4/80  train_loss=0.5000  val_loss=0.2602
+epoch   5/80  train_loss=0.3888  val_loss=0.2175
+
+accuracy by tier:
+  0 trivial   152/157  =  96.8%
+  1 easy      147/151  =  97.4%
+  2 medium    139/153  =  90.8%
+  3 hard       90/162  =  55.6%
+  4 hardest    51/161  =  31.7%
+accuracy by op:
+  +           180/183  =  98.4%
+  -           181/188  =  96.3%
+  /            78/163  =  47.9%
+  *           140/250  =  56.0%
+  overall     579/784  =  73.9%
+minimum category accuracy: 31.7%
+new best worst-category checkpoint -> ckp/abacus_injection_256x2x8.pt
+epoch   6/80  train_loss=0.3336  val_loss=0.1954
+epoch   7/80  train_loss=0.2917  val_loss=0.1605
+epoch   8/80  train_loss=0.2524  val_loss=0.1450
+epoch   9/80  train_loss=0.2227  val_loss=0.1245
+epoch  10/80  train_loss=0.2005  val_loss=0.1087
+
+accuracy by tier:
+  0 trivial   156/157  =  99.4%
+  1 easy      151/151  = 100.0%
+  2 medium    153/153  = 100.0%
+  3 hard      127/162  =  78.4%
+  4 hardest    65/161  =  40.4%
+accuracy by op:
+  +           182/183  =  99.5%
+  -           187/188  =  99.5%
+  /           100/163  =  61.3%
+  *           183/250  =  73.2%
+  overall     652/784  =  83.2%
+minimum category accuracy: 40.4%
+new best worst-category checkpoint -> ckp/abacus_injection_256x2x8.pt
+epoch  11/80  train_loss=0.1823  val_loss=0.1006
+epoch  12/80  train_loss=0.1659  val_loss=0.0969
+epoch  13/80  train_loss=0.1514  val_loss=0.0877
+epoch  14/80  train_loss=0.1385  val_loss=0.0845
+epoch  15/80  train_loss=0.1253  val_loss=0.0822
+
+accuracy by tier:
+  0 trivial   156/157  =  99.4%
+  1 easy      151/151  = 100.0%
+  2 medium    153/153  = 100.0%
+  3 hard      139/162  =  85.8%
+  4 hardest    84/161  =  52.2%
+accuracy by op:
+  +           182/183  =  99.5%
+  -           187/188  =  99.5%
+  /           112/163  =  68.7%
+  *           202/250  =  80.8%
+  overall     683/784  =  87.1%
+minimum category accuracy: 52.2%
+new best worst-category checkpoint -> ckp/abacus_injection_256x2x8.pt
+epoch  16/80  train_loss=0.1130  val_loss=0.0727
+epoch  17/80  train_loss=0.1025  val_loss=0.0780
+epoch  18/80  train_loss=0.0928  val_loss=0.0732
+epoch  19/80  train_loss=0.0837  val_loss=0.0713
+epoch  20/80  train_loss=0.0760  val_loss=0.0695
+
+accuracy by tier:
+  0 trivial   157/157  = 100.0%
+  1 easy      151/151  = 100.0%
+  2 medium    153/153  = 100.0%
+  3 hard      143/162  =  88.3%
+  4 hardest   100/161  =  62.1%
+accuracy by op:
+  +           183/183  = 100.0%
+  -           188/188  = 100.0%
+  /           116/163  =  71.2%
+  *           217/250  =  86.8%
+  overall     704/784  =  89.8%
+minimum category accuracy: 62.1%
+new best worst-category checkpoint -> ckp/abacus_injection_256x2x8.pt
+epoch  21/80  train_loss=0.0687  val_loss=0.0757
+epoch  22/80  train_loss=0.0623  val_loss=0.0782
+epoch  23/80  train_loss=0.0569  val_loss=0.0770
+epoch  24/80  train_loss=0.0519  val_loss=0.0755
+epoch  25/80  train_loss=0.0472  val_loss=0.0774
+
+accuracy by tier:
+  0 trivial   157/157  = 100.0%
+  1 easy      151/151  = 100.0%
+  2 medium    153/153  = 100.0%
+  3 hard      143/162  =  88.3%
+  4 hardest   108/161  =  67.1%
+accuracy by op:
+  +           183/183  = 100.0%
+  -           188/188  = 100.0%
+  /           113/163  =  69.3%
+  *           228/250  =  91.2%
+  overall     712/784  =  90.8%
+minimum category accuracy: 67.1%
+new best worst-category checkpoint -> ckp/abacus_injection_256x2x8.pt
+epoch  26/80  train_loss=0.0436  val_loss=0.0717
+epoch  27/80  train_loss=0.0398  val_loss=0.0740
+epoch  28/80  train_loss=0.0364  val_loss=0.0840
+epoch  29/80  train_loss=0.0338  val_loss=0.0767
+epoch  30/80  train_loss=0.0315  val_loss=0.0773
+
+accuracy by tier:
+  0 trivial   157/157  = 100.0%
+  1 easy      151/151  = 100.0%
+  2 medium    153/153  = 100.0%
+  3 hard      147/162  =  90.7%
+  4 hardest   106/161  =  65.8%
+accuracy by op:
+  +           183/183  = 100.0%
+  -           188/188  = 100.0%
+  /           116/163  =  71.2%
+  *           227/250  =  90.8%
+  overall     714/784  =  91.1%
+minimum category accuracy: 65.8%
+epoch  31/80  train_loss=0.0287  val_loss=0.0779
+epoch  32/80  train_loss=0.0266  val_loss=0.0796
+epoch  33/80  train_loss=0.0250  val_loss=0.0829
+epoch  34/80  train_loss=0.0230  val_loss=0.0793
+epoch  35/80  train_loss=0.0212  val_loss=0.0817
+
+accuracy by tier:
+  0 trivial   156/157  =  99.4%
+  1 easy      151/151  = 100.0%
+  2 medium    153/153  = 100.0%
+  3 hard      145/162  =  89.5%
+  4 hardest   108/161  =  67.1%
+accuracy by op:
+  +           183/183  = 100.0%
+  -           187/188  =  99.5%
+  /           116/163  =  71.2%
+  *           227/250  =  90.8%
+  overall     713/784  =  90.9%
+minimum category accuracy: 67.1%
+epoch  36/80  train_loss=0.0198  val_loss=0.0806
+epoch  37/80  train_loss=0.0182  val_loss=0.0830
+epoch  38/80  train_loss=0.0172  val_loss=0.0914
+epoch  39/80  train_loss=0.0156  val_loss=0.0906
+epoch  40/80  train_loss=0.0147  val_loss=0.0916
+
+accuracy by tier:
+  0 trivial   157/157  = 100.0%
+  1 easy      151/151  = 100.0%
+  2 medium    153/153  = 100.0%
+  3 hard      149/162  =  92.0%
+  4 hardest   115/161  =  71.4%
+accuracy by op:
+  +           183/183  = 100.0%
+  -           188/188  = 100.0%
+  /           119/163  =  73.0%
+  *           235/250  =  94.0%
+  overall     725/784  =  92.5%
+minimum category accuracy: 71.4%
+new best worst-category checkpoint -> ckp/abacus_injection_256x2x8.pt
+epoch  41/80  train_loss=0.0139  val_loss=0.0846
+epoch  42/80  train_loss=0.0126  val_loss=0.0938
+epoch  43/80  train_loss=0.0117  val_loss=0.0950
+epoch  44/80  train_loss=0.0109  val_loss=0.0946
+epoch  45/80  train_loss=0.0099  val_loss=0.0948
+
+accuracy by tier:
+  0 trivial   157/157  = 100.0%
+  1 easy      151/151  = 100.0%
+  2 medium    153/153  = 100.0%
+  3 hard      143/162  =  88.3%
+  4 hardest   108/161  =  67.1%
+accuracy by op:
+  +           183/183  = 100.0%
+  -           188/188  = 100.0%
+  /           113/163  =  69.3%
+  *           228/250  =  91.2%
+  overall     712/784  =  90.8%

@@ -386,12 +386,14 @@ class LLMCalcModel(nn.Module):
                  n_layers: int,  
                  eps: float = 1e-6, 
                  dropout: float = 0.5,
-                 abacus_config: dict | None = None) -> None:
+                 abacus_config: dict | None = None,
+                 input_injection: bool = False,) -> None:
         super().__init__()
         self.embedding: nn.Module = WordEmbeddings(d_model, vocab_size)
         self.abacus = (
             RandomizedAbacusEmbedding(d_model=d_model, **abacus_config)
             if abacus_config is not None else None)
+        self.input_injection = input_injection
         layers=[]
         for _ in range(n_layers):
             layers.append(DecoderBlock(max_seq_len, d_model, attention_heads, 4 * d_model, eps, dropout))
@@ -401,11 +403,29 @@ class LLMCalcModel(nn.Module):
     
     def forward(self, x: torch.Tensor, mask: torch.Tensor):
         token_ids = x
-        x = self.embedding(token_ids)
+        # input_features = self.embedding(token_ids)
+        # if self.abacus is not None:
+        #     input_features = input_features + self.abacus(token_ids)
+        # injected_state = input_features * torch.rsqrt(
+        #     input_features.pow(2).mean(dim=-1, keepdim=True) + 1e-6
+        # )
+        # x = injected_state
+        input_features = self.embedding(token_ids)
         if self.abacus is not None:
-            x = x + self.abacus(token_ids)
+            input_features = input_features + self.abacus(token_ids)
 
-        for decoder in self.decoder_layers:
+        if self.input_injection:
+            injected_state = input_features * torch.rsqrt(
+                input_features.pow(2).mean(dim=-1, keepdim=True) + 1e-6
+            )
+            x = injected_state
+        else:
+            injected_state = None
+            x = input_features
+
+        for l, decoder in enumerate(self.decoder_layers):
+            if self.input_injection and l > 0:
+                x = x + injected_state
             x = decoder(x, mask)
 
         x = self.layer_norm(x)
@@ -433,7 +453,9 @@ class LoopLlmCalc(nn.Module):
                  n_loops: int = 1,
                  eps: float = 1e-6,
                  dropout: float = 0.5,
-                 abacus_config: dict | None = None) -> None:
+                 abacus_config: dict | None = None,
+                 input_injection: bool = False,
+                 loop_signal: bool = True,) -> None:
         super().__init__()
         if n_loops < 1:
             raise ValueError("n_loops must be >= 1")
@@ -442,6 +464,8 @@ class LoopLlmCalc(nn.Module):
         self.abacus = (
             RandomizedAbacusEmbedding(d_model=d_model, **abacus_config)
             if abacus_config is not None else None)
+        self.input_injection = input_injection  
+        self.loop_signal = loop_signal  
         self.decoder_layers = nn.ModuleList(
             [DecoderBlock(max_seq_len, d_model, attention_heads, 4 * d_model, eps, dropout)
              for _ in range(n_layers)])
@@ -452,13 +476,32 @@ class LoopLlmCalc(nn.Module):
 
     def forward(self, x: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
         token_ids = x
-        x = self.embedding(token_ids)
+        # input_features = self.embedding(token_ids)
+        # if self.abacus is not None:
+        #     input_features = input_features + self.abacus(token_ids)
+        # x = input_features
+
+        input_features = self.embedding(token_ids)
         if self.abacus is not None:
-            x = x + self.abacus(token_ids)
+            input_features = input_features + self.abacus(token_ids)
+
+        if self.input_injection:
+            injected_state = input_features * torch.rsqrt(
+                input_features.pow(2).mean(dim=-1, keepdim=True) + 1e-6
+            )
+            x = injected_state
+        else:
+            injected_state = None
+            x = input_features
+
         for t in range(self.n_loops):
-            x = x + self.step_emb(self.loop_ids[t])
+            if self.input_injection and t > 0:
+                x = x + injected_state            
+            if self.loop_signal:
+                x = x + self.step_emb(self.loop_ids[t])
             for decoder in self.decoder_layers:
                 x = decoder(x, mask)
+
         x = self.layer_norm(x)
         return self.projection(x)
 
@@ -486,10 +529,11 @@ def build_model(mc: dict) -> nn.Module:
     common = dict(vocab_size=mc["vocab_size"], max_seq_len=mc["max_seq_len"],
                   d_model=mc["d_model"], attention_heads=mc["attention_heads"],
                   n_layers=mc["n_layers"], dropout=mc["dropout"],
-                  abacus_config=abacus_config)
+                  abacus_config=abacus_config,
+                  input_injection=bool(mc.get("input_injection", False)),)
     n_loops = mc.get("n_loops", 1)
     if n_loops > 1:
-        return LoopLlmCalc(n_loops=n_loops, **common)
+        return LoopLlmCalc(n_loops=n_loops, loop_signal=bool(mc.get("loop_signal", True)), **common)
     return LLMCalcModel(**common)
 
 
