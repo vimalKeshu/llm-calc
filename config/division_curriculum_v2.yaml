@@ -1,0 +1,74 @@
+model:
+  vocab_size: 22
+  max_seq_len: 20
+  d_model: 256
+  attention_heads: 8
+  n_layers: 2
+  n_loops: 8
+  dropout: 0.05
+  use_abacus: true
+  input_injection: true
+  loop_signal: true
+  abacus_base: 4
+  max_abacus_offset: 16
+  min_abacus_decimal_exponent: -3
+  max_abacus_integer_exponent: 5
+  abacus_zero_offset_probability: 0.5
+
+curriculum:
+  # This checkpoint is read-only. Every artifact below uses a new curriculum
+  # stem so the original GRPO checkpoints remain untouched.
+  checkpoint_path: ckp/grpo_loop_iter9_v2_256x2x8.pt
+  data_path: sample/pretrain_v2.jsonl
+  split: train
+  output_path: ckp/division_curriculum_from_iter9_v2_256x2x8.pt
+  lr: 2.0e-6
+  weight_decay: 0.0
+  batch_size: 64
+  max_grad_norm: 1.0
+  log_every: 20
+  save_stage_checkpoints: true
+  seed: 52
+  stages:
+    - name: fundamentals
+      include_operand_cells: ["1x1", "1x2", "2x1", "2x2"]
+      examples_per_epoch: 4096
+      batch_size: 64
+      epochs: 1
+      lr: 1.0e-6
+    - name: mixed_width
+      include_operand_cells: ["1x3", "2x3", "3x1", "3x2"]
+      examples_per_epoch: 6144
+      batch_size: 64
+      epochs: 1
+      lr: 2.0e-6
+    - name: hard_3x3
+      include_operand_cells: ["3x3"]
+      examples_per_epoch: 8192
+      batch_size: 64
+      epochs: 1
+      lr: 2.0e-6
+
+replay:
+  data_path: sample/pretrain_v2.jsonl
+  split: train
+  operations: ["+", "-", "*"]
+  pool_per_operation: 10000
+  batch_size: 48
+  supervised_weight: 0.30
+  distillation_weight: 1.00
+
+eval:
+  data_path: sample/division_curriculum_selection_v2_seed20260726.jsonl
+  split: test
+  operations: ["+", "-", "*", "/"]
+  batch_size: 128
+  limit: 0
+  checkpoint_gate:
+    protected_operations:
+      "+": 0.002
+      "-": 0.002
+      "*": 0.002
+    overall_regression_tolerance: 0.001
+    target_weights:
+      "/": 1.0

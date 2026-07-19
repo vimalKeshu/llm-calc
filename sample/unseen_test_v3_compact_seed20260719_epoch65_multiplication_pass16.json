@@ -1,0 +1,215 @@
+{
+  "categories": {
+    "all": {
+      "all": {
+        "group_state_rate": {
+          "all_correct": 0.4955,
+          "all_wrong": 0.1455,
+          "mixed": 0.359
+        },
+        "observed_group_size": 8,
+        "pass_at_k": {
+          "1": 0.707375,
+          "16": 0.876,
+          "8": 0.85424560994561
+        },
+        "prompts": 1000,
+        "sample_exact_rate": 0.707375,
+        "valid_output_rate": 1.0
+      }
+    },
+    "multiplication_central_band": {
+      "0": {
+        "group_state_rate": {
+          "all_correct": 0.646,
+          "all_wrong": 0.114,
+          "mixed": 0.24
+        },
+        "observed_group_size": 8,
+        "pass_at_k": {
+          "1": 0.788,
+          "16": 0.904,
+          "8": 0.8828003108003109
+        },
+        "prompts": 250,
+        "sample_exact_rate": 0.788,
+        "valid_output_rate": 1.0
+      },
+      "1": {
+        "group_state_rate": {
+          "all_correct": 0.476,
+          "all_wrong": 0.156,
+          "mixed": 0.368
+        },
+        "observed_group_size": 8,
+        "pass_at_k": {
+          "1": 0.70725,
+          "16": 0.86,
+          "8": 0.8401264957264957
+        },
+        "prompts": 250,
+        "sample_exact_rate": 0.70725,
+        "valid_output_rate": 1.0
+      },
+      "2": {
+        "group_state_rate": {
+          "all_correct": 0.39,
+          "all_wrong": 0.198,
+          "mixed": 0.412
+        },
+        "observed_group_size": 8,
+        "pass_at_k": {
+          "1": 0.61975,
+          "16": 0.828,
+          "8": 0.8003863247863248
+        },
+        "prompts": 250,
+        "sample_exact_rate": 0.61975,
+        "valid_output_rate": 1.0
+      },
+      "3": {
+        "group_state_rate": {
+          "all_correct": 0.47,
+          "all_wrong": 0.114,
+          "mixed": 0.416
+        },
+        "observed_group_size": 8,
+        "pass_at_k": {
+          "1": 0.7145,
+          "16": 0.912,
+          "8": 0.8936693084693085
+        },
+        "prompts": 250,
+        "sample_exact_rate": 0.7145,
+        "valid_output_rate": 1.0
+      }
+    },
+    "multiplication_sign": {
+      "negative_negative": {
+        "group_state_rate": {
+          "all_correct": 0.43,
+          "all_wrong": 0.11,
+          "mixed": 0.46
+        },
+        "observed_group_size": 8,
+        "pass_at_k": {
+          "1": 0.7025,
+          "16": 0.92,
+          "8": 0.8861888111888112
+        },
+        "prompts": 100,
+        "sample_exact_rate": 0.7025,
+        "valid_output_rate": 1.0
+      },
+      "negative_positive": {
+        "group_state_rate": {
+          "all_correct": 0.385,
+          "all_wrong": 0.16,
+          "mixed": 0.455
+        },
+        "observed_group_size": 8,
+        "pass_at_k": {
+          "1": 0.6425,
+          "16": 0.85,
+          "8": 0.8368065268065269
+        },
+        "prompts": 100,
+        "sample_exact_rate": 0.6425,
+        "valid_output_rate": 1.0
+      },
+      "positive_positive": {
+        "group_state_rate": {
+          "all_correct": 0.5175,
+          "all_wrong": 0.148125,
+          "mixed": 0.334375
+        },
+        "observed_group_size": 8,
+        "pass_at_k": {
+          "1": 0.71609375,
+          "16": 0.87375,
+          "8": 0.8524325951825952
+        },
+        "prompts": 800,
+        "sample_exact_rate": 0.71609375,
+        "valid_output_rate": 1.0
+      }
+    },
+    "operation": {
+      "*": {
+        "group_state_rate": {
+          "all_correct": 0.4955,
+          "all_wrong": 0.1455,
+          "mixed": 0.359
+        },
+        "observed_group_size": 8,
+        "pass_at_k": {
+          "1": 0.707375,
+          "16": 0.876,
+          "8": 0.85424560994561
+        },
+        "prompts": 1000,
+        "sample_exact_rate": 0.707375,
+        "valid_output_rate": 1.0
+      }
+    },
+    "scenario": {
+      "*|contains_zero_digit": {
+        "group_state_rate": {
+          "all_correct": 0.5027472527472527,
+          "all_wrong": 0.25274725274725274,
+          "mixed": 0.2445054945054945
+        },
+        "observed_group_size": 8,
+        "pass_at_k": {
+          "1": 0.6334134615384616,
+          "16": 0.7692307692307693,
+          "8": 0.7467730986961757
+        },
+        "prompts": 364,
+        "sample_exact_rate": 0.6334134615384616,
+        "valid_output_rate": 1.0
+      },
+      "*|dense_mixed_digits": {
+        "group_state_rate": {
+          "all_correct": 0.4894822006472492,
+          "all_wrong": 0.08576051779935275,
+          "mixed": 0.42475728155339804
+        },
+        "observed_group_size": 8,
+        "pass_at_k": {
+          "1": 0.7502022653721683,
+          "16": 0.9352750809061489,
+          "8": 0.9144615183450134
+        },
+        "prompts": 618,
+        "sample_exact_rate": 0.7502022653721683,
+        "valid_output_rate": 1.0
+      },
+      "*|repeated_digit_operand": {
+        "group_state_rate": {
+          "all_correct": 0.5555555555555556,
+          "all_wrong": 0.027777777777777776,
+          "mixed": 0.4166666666666667
+        },
+        "observed_group_size": 8,
+        "pass_at_k": {
+          "1": 0.7326388888888888,
+          "16": 1.0,
+          "8": 0.9601657601657602
+        },
+        "prompts": 18,
+        "sample_exact_rate": 0.7326388888888888,
+        "valid_output_rate": 1.0
+      }
+    }
+  },
+  "data_path": "sample/unseen_test_v3_compact_seed20260719.jsonl",
+  "group_size": 8,
+  "operations": [
+    "*"
+  ],
+  "samples_per_prompt": 16,
+  "seed": 20260719,
+  "split": "test",
+  "temperature": 1.0
+}

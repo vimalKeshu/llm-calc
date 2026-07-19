@@ -28,9 +28,10 @@ class RandomizedAbacusEmbedding(nn.Module):
 
     Division samples remain in natural order. Their digit exponents are derived
     from the decimal point (or an implicit decimal point after an integer). The
-    answer is expected to use the fixed ``DDD.ddd`` format, which lets partial
-    autoregressive answer prefixes receive stable place IDs before the decimal
-    point has been generated.
+    A fixed ``DDD.ddd`` answer lets partial autoregressive answer prefixes
+    receive stable place IDs before the decimal point has been generated. In
+    compact mode the integer width is not causally knowable, so answer digits
+    omit Abacus place features while division operands retain them.
 
     During training a single scalar beta is shared by the whole batch. Shifting
     every digit by the same beta trains higher embedding rows without breaking
@@ -48,7 +49,8 @@ class RandomizedAbacusEmbedding(nn.Module):
                  max_offset: int = 16,
                  min_decimal_exponent: int = -3,
                  max_integer_exponent: int = 5,
-                 zero_offset_probability: float = 0.5) -> None:
+                 zero_offset_probability: float = 0.5,
+                 division_answer_format: str = "fixed_width") -> None:
         super().__init__()
         if base + min_decimal_exponent < 1:
             raise ValueError(
@@ -67,6 +69,13 @@ class RandomizedAbacusEmbedding(nn.Module):
         self.division_token_id = division_token_id
         self.equals_token_id = equals_token_id
         self.decimal_token_id = decimal_token_id
+        self.division_answer_format = division_answer_format
+        if division_answer_format not in (
+                "fixed", "fixed_width", "DDD.ddd",
+                "compact", "compact_fixed_precision", "D.ddd"):
+            raise ValueError(
+                f"unsupported division answer format: "
+                f"{division_answer_format!r}")
 
         # ID 0 is reserved for tokens which are not digits. max_offset also
         # provides unused-at-beta=0 rows for later length-extrapolation tests.
@@ -199,10 +208,28 @@ class RandomizedAbacusEmbedding(nn.Module):
         digit_position_ids = self.base + beta_tensor + exponents
         position_ids = torch.where(
             digit_mask, digit_position_ids, torch.zeros_like(digit_position_ids))
+        abacus_digit_mask = digit_mask
+
+        # A compact quotient can have one, two, or three integer digits. Before
+        # the decimal point is generated, a causal model cannot know whether
+        # the first answer digit is hundreds, tens, or units. Suppress the
+        # misleading fixed-width place feature on answer digits; token and RoPE
+        # embeddings still represent them, and operand digits keep their
+        # ordinary Abacus place features.
+        if self.division_answer_format in (
+                "compact", "compact_fixed_precision", "D.ddd"):
+            equals_seen = input_ids.eq(
+                self.equals_token_id).cumsum(dim=1).gt(0)
+            compact_answer_digits = digit_mask & equals_seen & division_rows
+            position_ids = torch.where(
+                compact_answer_digits,
+                torch.zeros_like(position_ids),
+                position_ids)
+            abacus_digit_mask = digit_mask & ~compact_answer_digits
 
         # Fail with a representation-specific error instead of an opaque
         # embedding lookup failure if data violates the configured place range.
-        invalid = digit_mask & (
+        invalid = abacus_digit_mask & (
             (position_ids <= 0) | (position_ids >= self.embedding.num_embeddings))
         if torch.any(invalid):
             invalid_id = position_ids[invalid][0].item()
@@ -524,6 +551,8 @@ def build_model(mc: dict) -> nn.Module:
                 mc.get("max_abacus_integer_exponent", 5)),
             zero_offset_probability=float(
                 mc.get("abacus_zero_offset_probability", 0.5)),
+            division_answer_format=mc.get(
+                "division_answer_format", "fixed_width"),
         )
 
     common = dict(vocab_size=mc["vocab_size"], max_seq_len=mc["max_seq_len"],

@@ -50,7 +50,7 @@ def compute(a, b, op):
         return a * b
     # op == '/'
     if b == 0:
-        return None
+        return "NAN"
     r = round(a / b, 3)
     return int(r) if r == int(r) else r
 
@@ -59,6 +59,23 @@ def is_rounded_div(a, b, result):
     """True when a/b did not terminate cleanly and had to be rounded
     (i.e. a 'hard' repeating decimal like 1/3, 100/7)."""
     return abs(a / b - result) > 1e-9
+
+
+def parse_expression(prompt):
+    """Split an expression while distinguishing unary and binary minus.
+
+    Scanning left-to-right after the optional leading sign finds the binary
+    operator before a possible second-operand sign, so ``-12*-34=`` parses as
+    ``(-12, -34, '*')`` rather than as subtraction.
+    """
+    if not isinstance(prompt, str):
+        raise ValueError(f"expression must be a string: {prompt!r}")
+    suffix = '=' if prompt.endswith('=') else ''
+    lhs = prompt[:-1] if suffix else prompt
+    for index in range(1, len(lhs)):
+        if lhs[index] in V.OPERATORS:
+            return lhs[:index], lhs[index + 1:], lhs[index], suffix
+    raise ValueError(f"could not find arithmetic operator in {prompt!r}")
 
 
 def reverse_magnitude(value):
@@ -91,19 +108,28 @@ def should_reverse(op):
     return op in ('+', '-', '*')
 
 
-def format_division_answer(result):
-    """Format a rounded quotient as the fixed internal DDD.ddd representation."""
+def format_division_answer(result, answer_format="fixed_width"):
+    """Format a rounded quotient using a configured three-decimal convention."""
+    if result == "NAN":
+        return "NAN"
     value = float(result)
     sign = '-' if value < 0 else ''
     magnitude = abs(value)
     if magnitude >= 1000:
         raise ValueError(
             f"division result {result!r} does not fit the DDD.ddd format")
-    return sign + f"{magnitude:07.3f}"
+    if answer_format in ("fixed", "fixed_width", "DDD.ddd"):
+        return sign + f"{magnitude:07.3f}"
+    if answer_format in (
+            "compact", "compact_fixed_precision", "D.ddd"):
+        return sign + f"{magnitude:.3f}"
+    raise ValueError(f"unsupported division answer format: {answer_format!r}")
 
 
 def normalize_division_answer(answer):
     """Convert an internal DDD.ddd quotient to a user-facing decimal string."""
+    if answer.upper() == "NAN":
+        return "NAN"
     try:
         value = float(answer)
     except ValueError:
@@ -119,14 +145,7 @@ def encode_prompt(prompt, internal_format=True):
     """Convert a natural prompt such as ``123+45=`` to the model's format."""
     if not internal_format:
         return prompt
-    suffix = '=' if prompt.endswith('=') else ''
-    lhs = prompt[:-1] if suffix else prompt
-    op = next((candidate for candidate in V.OPERATORS
-               if lhs.find(candidate, 1) != -1), None)
-    if op is None:
-        raise ValueError(f"could not find arithmetic operator in {prompt!r}")
-    op_index = lhs.find(op, 1)
-    left, right = lhs[:op_index], lhs[op_index + 1:]
+    left, right, op, suffix = parse_expression(prompt)
     if should_reverse(op):
         left = reverse_magnitude(left)
         right = reverse_magnitude(right)
@@ -144,19 +163,24 @@ def decode_internal_answer(op, answer, internal_format=True):
     return answer
 
 
-def make_text(a, b, op, result, reverse=True):
+def make_text(a, b, op, result, reverse=True,
+              division_answer_format="fixed_width"):
     """Create a natural expression or the agreed Abacus internal expression."""
     if not reverse:
         return f"{a}{op}{b}={result}"
     if should_reverse(op):
         return (f"{reverse_magnitude(a)}{op}{reverse_magnitude(b)}="
                 f"{reverse_magnitude(result)}")
-    return f"{a}{op}{b}={format_division_answer(result)}"
+    return (
+        f"{a}{op}{b}="
+        f"{format_division_answer(result, division_answer_format)}")
 
 
 def verify(a, b, op, result):
     """Independent recomputation as a safety net against generator bugs."""
     expected = compute(a, b, op)
+    if expected == "NAN" or result == "NAN":
+        return expected == result == "NAN"
     if expected is None or result is None:
         return False
     return abs(float(expected) - float(result)) < 1e-6
@@ -204,7 +228,7 @@ def classify(a, b, op, result):
     """Return (tier:int 0..4, score:float). score = tier + a within-tier
     fraction so rows can be finely ordered for curriculum scheduling."""
     la, lb = ndigits(a), ndigits(b)
-    neg = (result is not None) and (float(result) < 0)
+    neg = (result not in (None, "NAN")) and (float(result) < 0)
 
     # ---- tier 0: trivial / identity / degenerate ----
     if op in '+-' and (a == 0 or b == 0):
@@ -246,6 +270,8 @@ def classify(a, b, op, result):
         return tier, tier + sub
 
     # op == '/'
+    if result == "NAN":
+        return 0, 0.0
     hard_dec = is_rounded_div(a, b, result)
     if la <= 1 and not hard_dec:
         tier = 1
@@ -460,10 +486,11 @@ def report(rows):
     op_c = Counter()
     for r in rows:
         lhs = r["text"].split('=')[0]
-        for op in V.OPERATORS:
-            if lhs.find(op, 1) != -1:
-                op_c[op] += 1
-                break
+        try:
+            _, _, op, _ = parse_expression(lhs)
+            op_c[op] += 1
+        except ValueError:
+            pass
     print("tier distribution:", {TIER_NAMES[t]: tiers[t] for t in range(5)})
     print("op   distribution:", dict(op_c))
 

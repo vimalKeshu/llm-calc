@@ -1,0 +1,225 @@
+{
+  "categories": {
+    "all": {
+      "all": {
+        "group_state_rate": {
+          "all_correct": 0.05475,
+          "all_wrong": 0.426,
+          "mixed": 0.51925
+        },
+        "observed_group_size": 16,
+        "pass_at_k": {
+          "1": 0.240171875,
+          "16": 0.5761084806277936,
+          "64": 0.688,
+          "8": 0.5027066027251516
+        },
+        "prompts": 1000,
+        "sample_exact_rate": 0.240171875,
+        "valid_output_rate": 0.999921875
+      }
+    },
+    "division_sign": {
+      "negative": {
+        "group_state_rate": {
+          "all_correct": 0.050833333333333335,
+          "all_wrong": 0.42083333333333334,
+          "mixed": 0.5283333333333333
+        },
+        "observed_group_size": 16,
+        "pass_at_k": {
+          "1": 0.24375,
+          "16": 0.5821553828813659,
+          "64": 0.6866666666666666,
+          "8": 0.5101355163013873
+        },
+        "prompts": 300,
+        "sample_exact_rate": 0.24375,
+        "valid_output_rate": 0.9999479166666667
+      },
+      "positive": {
+        "group_state_rate": {
+          "all_correct": 0.056428571428571425,
+          "all_wrong": 0.4282142857142857,
+          "mixed": 0.5153571428571428
+        },
+        "observed_group_size": 16,
+        "pass_at_k": {
+          "1": 0.23863839285714286,
+          "16": 0.5735169510905482,
+          "64": 0.6885714285714286,
+          "8": 0.4995227826210505
+        },
+        "prompts": 700,
+        "sample_exact_rate": 0.23863839285714286,
+        "valid_output_rate": 0.9999107142857143
+      }
+    },
+    "operation": {
+      "/": {
+        "group_state_rate": {
+          "all_correct": 0.05475,
+          "all_wrong": 0.426,
+          "mixed": 0.51925
+        },
+        "observed_group_size": 16,
+        "pass_at_k": {
+          "1": 0.240171875,
+          "16": 0.5761084806277936,
+          "64": 0.688,
+          "8": 0.5027066027251516
+        },
+        "prompts": 1000,
+        "sample_exact_rate": 0.240171875,
+        "valid_output_rate": 0.999921875
+      }
+    },
+    "scenario": {
+      "/|near_integer_above": {
+        "group_state_rate": {
+          "all_correct": 0.12857142857142856,
+          "all_wrong": 0.4,
+          "mixed": 0.4714285714285714
+        },
+        "observed_group_size": 16,
+        "pass_at_k": {
+          "1": 0.40625,
+          "16": 0.6017615184448918,
+          "64": 0.6857142857142857,
+          "8": 0.5718012727574039
+        },
+        "prompts": 35,
+        "sample_exact_rate": 0.40625,
+        "valid_output_rate": 1.0
+      },
+      "/|near_integer_below": {
+        "group_state_rate": {
+          "all_correct": 0.16463414634146342,
+          "all_wrong": 0.29878048780487804,
+          "mixed": 0.5365853658536586
+        },
+        "observed_group_size": 16,
+        "pass_at_k": {
+          "1": 0.39634146341463417,
+          "16": 0.6967345733119029,
+          "64": 0.8048780487804879,
+          "8": 0.635723033592456
+        },
+        "prompts": 41,
+        "sample_exact_rate": 0.39634146341463417,
+        "valid_output_rate": 1.0
+      },
+      "/|rounded_below_medium": {
+        "group_state_rate": {
+          "all_correct": 0.07283057851239669,
+          "all_wrong": 0.24173553719008264,
+          "mixed": 0.6854338842975206
+        },
+        "observed_group_size": 16,
+        "pass_at_k": {
+          "1": 0.3431043388429752,
+          "16": 0.7571804558775371,
+          "64": 0.8367768595041323,
+          "8": 0.6839122016029482
+        },
+        "prompts": 484,
+        "sample_exact_rate": 0.3431043388429752,
+        "valid_output_rate": 0.9999354338842975
+      },
+      "/|rounded_ge1_q1digit": {
+        "group_state_rate": {
+          "all_correct": 0.008640552995391706,
+          "all_wrong": 0.6514976958525346,
+          "mixed": 0.33986175115207373
+        },
+        "observed_group_size": 16,
+        "pass_at_k": {
+          "1": 0.08748559907834101,
+          "16": 0.3548510814094662,
+          "64": 0.5069124423963134,
+          "8": 0.2756115790361879
+        },
+        "prompts": 434,
+        "sample_exact_rate": 0.08748559907834101,
+        "valid_output_rate": 0.9998919930875576
+      },
+      "/|terminating_at_least_one_1dp": {
+        "group_state_rate": {
+          "all_correct": 0.5,
+          "all_wrong": 0.0,
+          "mixed": 0.5
+        },
+        "observed_group_size": 16,
+        "pass_at_k": {
+          "1": 0.8515625,
+          "16": 0.9999999999990082,
+          "64": 1.0,
+          "8": 0.9999914619096084
+        },
+        "prompts": 2,
+        "sample_exact_rate": 0.8515625,
+        "valid_output_rate": 1.0
+      },
+      "/|terminating_at_least_one_2dp": {
+        "group_state_rate": {
+          "all_correct": 0.75,
+          "all_wrong": 0.0,
+          "mixed": 0.25
+        },
+        "observed_group_size": 16,
+        "pass_at_k": {
+          "1": 0.984375,
+          "16": 1.0,
+          "64": 1.0,
+          "8": 1.0
+        },
+        "prompts": 2,
+        "sample_exact_rate": 0.984375,
+        "valid_output_rate": 1.0
+      },
+      "/|terminating_below_one_2dp": {
+        "group_state_rate": {
+          "all_correct": 1.0,
+          "all_wrong": 0.0,
+          "mixed": 0.0
+        },
+        "observed_group_size": 16,
+        "pass_at_k": {
+          "1": 1.0,
+          "16": 1.0,
+          "64": 1.0,
+          "8": 1.0
+        },
+        "prompts": 1,
+        "sample_exact_rate": 1.0,
+        "valid_output_rate": 1.0
+      },
+      "/|terminating_below_one_3dp": {
+        "group_state_rate": {
+          "all_correct": 1.0,
+          "all_wrong": 0.0,
+          "mixed": 0.0
+        },
+        "observed_group_size": 16,
+        "pass_at_k": {
+          "1": 1.0,
+          "16": 1.0,
+          "64": 1.0,
+          "8": 1.0
+        },
+        "prompts": 1,
+        "sample_exact_rate": 1.0,
+        "valid_output_rate": 1.0
+      }
+    }
+  },
+  "data_path": "sample/unseen_test_v3_compact_seed20260719.jsonl",
+  "group_size": 16,
+  "operations": [
+    "/"
+  ],
+  "samples_per_prompt": 64,
+  "seed": 20260719,
+  "split": "test",
+  "temperature": 1.0
+}

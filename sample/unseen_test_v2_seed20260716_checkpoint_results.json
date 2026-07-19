@@ -1,0 +1,53 @@
+{
+  "test_set": "sample/unseen_test_v2_seed20260716.jsonl",
+  "checkpoint_candidates_were_declared_before_evaluation": true,
+  "checkpoint_results": [
+    {
+      "epoch": 45,
+      "overall": {"correct": 2597, "total": 4000, "accuracy": 0.64925},
+      "operations": {"+": 0.982, "-": 0.973, "/": 0.106, "*": 0.536}
+    },
+    {
+      "epoch": 60,
+      "overall": {"correct": 2716, "total": 4000, "accuracy": 0.679},
+      "operations": {"+": 0.984, "-": 0.982, "/": 0.121, "*": 0.629}
+    },
+    {
+      "epoch": 65,
+      "overall": {"correct": 2761, "total": 4000, "accuracy": 0.69025},
+      "operations": {"+": 0.986, "-": 0.978, "/": 0.124, "*": 0.673}
+    },
+    {
+      "epoch": 70,
+      "overall": {"correct": 2745, "total": 4000, "accuracy": 0.68625},
+      "operations": {"+": 0.984, "-": 0.974, "/": 0.118, "*": 0.669}
+    },
+    {
+      "epoch": 75,
+      "overall": {"correct": 2778, "total": 4000, "accuracy": 0.6945},
+      "operations": {"+": 0.985, "-": 0.976, "/": 0.125, "*": 0.692}
+    },
+    {
+      "epoch": 80,
+      "overall": {"correct": 2774, "total": 4000, "accuracy": 0.6935},
+      "operations": {"+": 0.985, "-": 0.977, "/": 0.12, "*": 0.692}
+    }
+  ],
+  "epoch_75_details": {
+    "multiplication_sign": {
+      "positive_positive": {"correct": 553, "total": 800, "accuracy": 0.69125},
+      "negative_positive": {"correct": 73, "total": 100, "accuracy": 0.73},
+      "negative_negative": {"correct": 66, "total": 100, "accuracy": 0.66}
+    },
+    "multiplication_central_band": {
+      "0": {"correct": 185, "total": 250, "accuracy": 0.74},
+      "1": {"correct": 164, "total": 250, "accuracy": 0.656},
+      "2": {"correct": 164, "total": 250, "accuracy": 0.656},
+      "3": {"correct": 179, "total": 250, "accuracy": 0.716}
+    },
+    "division_sign": {
+      "positive": {"correct": 105, "total": 800, "accuracy": 0.13125},
+      "negative": {"correct": 20, "total": 200, "accuracy": 0.1}
+    }
+  }
+}

@@ -1,0 +1,757 @@
+meta:
+  name: three_digit_algorithmic_understanding
+  version: 7
+  description: >-
+    Greedy exact-match tests of arithmetic mechanisms inside the supported
+    calculator domain. Every operand has absolute value at most 999; answers
+    may be longer (a three-by-three-digit product can have six digits) or NAN
+    for a zero divisor.
+    Prompts are required to be absent from the configured training split.
+  max_abs_operand: 999
+  require_unseen_from_training: true
+
+groups:
+  # Addition is separated by carry structure. This tests whether the model
+  # applies the column rule, rather than merely recognizing operand size.
+  - name: addition_no_carry
+    scope: structural
+    principle: Three-digit addition where no column produces a carry.
+    data:
+      - "6+520="
+      - "516+72="
+      - "621+61="
+      - "354+25="
+      - "881+3="
+      - "144+844="
+      - "622+34="
+      - "437+22="
+      - "533+213="
+      - "261+516="
+
+  - name: addition_single_carry
+    scope: structural
+    principle: Exactly one carried column in otherwise ordinary addition.
+    data:
+      - "303+8="
+      - "9+635="
+      - "195+330="
+      - "990+202="
+      - "346+609="
+      - "381+9="
+      - "417+771="
+      - "457+127="
+      - "951+242="
+      - "129+855="
+
+  - name: addition_independent_multi_carry
+    scope: structural
+    principle: Multiple carried columns without an incoming carry triggering the next one.
+    data:
+      - "389+169="
+      - "287+647="
+      - "266+466="
+      - "474+386="
+      - "126+784="
+      - "389+575="
+      - "559+295="
+      - "269+574="
+      - "299+565="
+      - "272+698="
+      - "548+186="
+      - "176+196="
+
+  - name: addition_cascading_carry_one_step
+    scope: structural
+    principle: One incoming carry causally triggers the next carried column.
+    data:
+      - "199+1="
+      - "794+219="
+      - "649+367="
+      - "875+826="
+      - "192+897="
+      - "153+881="
+      - "877+329="
+      - "884+816="
+      - "354+148="
+      - "375+669="
+      - "739+299="
+      - "437+267="
+
+  - name: addition_cascading_carry_two_step
+    scope: structural
+    principle: A carry propagates causally through two successive columns.
+    data:
+      - "899+101="
+      - "897+104="
+      - "39+966="
+      - "69+936="
+      - "408+597="
+      - "574+427="
+      - "626+374="
+      - "298+707="
+      - "339+667="
+      - "974+26="
+      - "726+275="
+      - "569+432="
+
+  - name: addition_signed_simple
+    scope: signed
+    principle: Signed addition whose magnitude subtraction has no long borrow mechanism.
+    data:
+      - "-250+571="
+      - "-396+367="
+      - "-931+941="
+      - "-691+252="
+      - "-316+833="
+      - "-488+669="
+      - "-723+750="
+      - "-678+590="
+      - "-126+718="
+      - "-387+221="
+      - "-992+708="
+      - "-840+340="
+
+  - name: addition_signed_multi_borrow
+    scope: signed
+    principle: Signed addition crossed with multiple ordinary magnitude-subtraction borrows.
+    data:
+      - "-273+189="
+      - "-743+546="
+      - "-821+196="
+      - "-977+398="
+      - "-199+262="
+      - "-794+851="
+      - "-428+622="
+      - "-543+822="
+      - "-366+514="
+      - "-365+754="
+      - "-184+420="
+      - "-99+771="
+
+  - name: addition_signed_borrow_across_zero
+    scope: signed
+    principle: Signed addition whose magnitude subtraction propagates a borrow through zero.
+    data:
+      - "-286+904="
+      - "-902+166="
+      - "-406+239="
+      - "-296+503="
+      - "-51+900="
+      - "-801+202="
+      - "-609+906="
+      - "-47+701="
+      - "-300+242="
+      - "-657+903="
+      - "-496+900="
+      - "-501+128="
+
+  - name: addition_zero_digit_operands
+    scope: format
+    principle: Zero digits inside three-digit operands across several addition mechanisms.
+    data:
+      - "170+267="
+      - "-900+948="
+      - "-510+969="
+      - "-736+560="
+      - "-530+845="
+      - "905+753="
+      - "-840+327="
+      - "650+897="
+      - "-996+509="
+      - "-906+241="
+
+  # Subtraction separates ordinary columns, a single borrow, propagation
+  # through several columns, negative results, and a negative first operand.
+  - name: subtraction_no_borrow
+    scope: structural
+    principle: Subtraction requiring no borrowed column.
+    data:
+      - "94-3="
+      - "941-0="
+      - "63-62="
+      - "58-45="
+      - "339-4="
+      - "332-21="
+      - "385-83="
+      - "856-142="
+      - "469-1="
+      - "882-512="
+
+  - name: subtraction_identities
+    scope: edge
+    principle: Subtract-zero and equal-operand identities across operand widths.
+    data:
+      - "7-0="
+      - "48-0="
+      - "104-0="
+      - "305-0="
+      - "720-0="
+      - "999-0="
+      - "7-7="
+      - "48-48="
+      - "104-104="
+      - "305-305="
+      - "720-720="
+      - "999-999="
+
+  - name: subtraction_single_borrow
+    scope: structural
+    principle: Exactly one borrowed column.
+    data:
+      - "294-78="
+      - "690-34="
+      - "955-529="
+      - "779-84="
+      - "894-635="
+      - "839-247="
+      - "947-564="
+      - "394-9="
+      - "736-728="
+      - "934-251="
+
+  - name: subtraction_multi_borrow
+    scope: structural
+    principle: Multiple borrowed columns without propagation through a zero digit.
+    data:
+      - "951-557="
+      - "718-219="
+      - "722-625="
+      - "852-377="
+      - "930-881="
+      - "611-268="
+      - "841-145="
+      - "954-459="
+      - "591-399="
+      - "453-254="
+      - "544-445="
+      - "912-899="
+
+  - name: subtraction_borrow_across_zero
+    scope: structural
+    principle: A borrow must propagate through one or more zero digits.
+    data:
+      - "100-1="
+      - "300-1="
+      - "500-499="
+      - "800-147="
+      - "701-499="
+      - "300-206="
+      - "603-284="
+      - "701-642="
+      - "601-387="
+      - "702-644="
+      - "906-807="
+      - "603-554="
+
+  - name: subtraction_negative_result_simple
+    scope: signed
+    principle: A non-negative first operand crosses below zero with simple reversed-magnitude subtraction.
+    data:
+      - "603-796="
+      - "706-761="
+      - "352-517="
+      - "623-706="
+      - "978-987="
+      - "283-346="
+      - "760-803="
+      - "914-992="
+      - "313-897="
+      - "993-995="
+      - "720-829="
+      - "756-956="
+
+  - name: subtraction_negative_result_multi_borrow
+    scope: signed
+    principle: Sign selection is crossed with multiple ordinary magnitude-subtraction borrows.
+    data:
+      - "784-832="
+      - "887-965="
+      - "587-714="
+      - "765-843="
+      - "429-810="
+      - "377-635="
+      - "892-951="
+      - "168-226="
+      - "337-814="
+      - "473-831="
+      - "775-870="
+      - "575-673="
+
+  - name: subtraction_negative_result_borrow_across_zero
+    scope: signed
+    principle: A negative result whose reversed magnitude subtraction borrows through zero.
+    data:
+      - "704-901="
+      - "218-301="
+      - "321-500="
+      - "548-902="
+      - "4-400="
+      - "696-904="
+      - "215-802="
+      - "24-400="
+      - "339-808="
+      - "479-500="
+      - "417-901="
+      - "176-503="
+
+  - name: subtraction_signed_low_carry
+    scope: signed
+    principle: Subtraction from a negative first operand with at most one magnitude-addition carry.
+    data:
+      - "-443-343="
+      - "-803-563="
+      - "-600-787="
+      - "-277-722="
+      - "-347-303="
+      - "-963-903="
+      - "-732-861="
+      - "-802-227="
+      - "-135-231="
+      - "-460-414="
+      - "-359-509="
+      - "-321-277="
+
+  - name: subtraction_signed_independent_multi_carry
+    scope: signed
+    principle: Multiple magnitude-addition carries that do not causally propagate.
+    data:
+      - "-643-568="
+      - "-523-981="
+      - "-955-478="
+      - "-987-161="
+      - "-296-394="
+      - "-775-434="
+      - "-931-287="
+      - "-385-966="
+      - "-918-574="
+      - "-547-971="
+      - "-468-955="
+      - "-935-717="
+
+  - name: subtraction_signed_cascading_carry
+    scope: signed
+    principle: Subtraction from a negative first operand with a cascading magnitude-addition carry.
+    data:
+      - "-920-91="
+      - "-349-651="
+      - "-492-308="
+      - "-475-627="
+      - "-263-780="
+      - "-294-716="
+      - "-343-680="
+      - "-619-882="
+      - "-683-917="
+      - "-218-792="
+      - "-338-868="
+      - "-729-289="
+
+  - name: subtraction_zero_digit_operands
+    scope: format
+    principle: Zero digits inside three-digit operands outside the dedicated borrow-across-zero band.
+    data:
+      - "417-860="
+      - "876-540="
+      - "-580-268="
+      - "-605-690="
+      - "-440-633="
+      - "380-834="
+      - "-870-934="
+      - "910-108="
+      - "464-701="
+      - "-272-190="
+
+  # Multiplication is divided by the number of interacting digit columns.
+  - name: multiplication_one_column
+    scope: structural
+    principle: A one-digit multiplier applied in both operand positions.
+    data:
+      - "999*9="
+      - "9*999="
+      - "8*846="
+      - "168*3="
+      - "756*2="
+      - "146*9="
+      - "687*3="
+      - "733*4="
+      - "3*788="
+      - "6*888="
+      - "9*874="
+      - "7*636="
+
+  - name: multiplication_two_by_two
+    scope: structural
+    principle: Two partial-product columns and their carry interactions.
+    data:
+      - "99*99="
+      - "17*84="
+      - "82*41="
+      - "62*72="
+      - "39*52="
+      - "42*57="
+      - "17*85="
+      - "53*38="
+      - "77*63="
+      - "16*93="
+      - "38*54="
+      - "75*78="
+
+  - name: multiplication_three_by_two
+    scope: structural
+    principle: Three-by-two-digit partial products with multiple carry paths.
+    data:
+      - "263*97="
+      - "807*29="
+      - "171*95="
+      - "407*74="
+      - "353*91="
+      - "816*42="
+      - "927*78="
+      - "321*71="
+      - "699*65="
+      - "954*71="
+      - "405*85="
+      - "777*64="
+
+  - name: multiplication_three_by_three
+    scope: structural
+    principle: Full three-by-three-digit products, including dense and sparse digits.
+    data:
+      - "999*999="
+      - "123*456="
+      - "500*200="
+      - "111*999="
+      - "888*999="
+      - "777*777="
+      - "997*998="
+      - "873*553="
+      - "661*556="
+      - "599*324="
+      - "430*972="
+      - "580*590="
+      - "535*217="
+      - "612*652="
+      - "923*670="
+      - "994*781="
+
+  - name: multiplication_signed
+    scope: signed
+    principle: Sign preservation across easy and dense products.
+    data:
+      - "-99*99="
+      - "-61*841="
+      - "-206*999="
+      - "-489*588="
+      - "-202*952="
+      - "-379*950="
+      - "-524*770="
+      - "-810*373="
+      - "-930*238="
+      - "-7*286="
+      - "-204*8="
+      - "-73*65="
+
+  - name: multiplication_double_negative
+    scope: signed
+    principle: Two negative factors must produce the positive magnitude product.
+    data:
+      - "-12*-34="
+      - "-99*-87="
+      - "-123*-456="
+      - "-777*-777="
+      - "-908*-706="
+      - "-501*-203="
+      - "-999*-1="
+      - "-1*-999="
+      - "-640*-75="
+      - "-83*-609="
+      - "-314*-271="
+      - "-888*-909="
+
+  # Division distinguishes exact integer quotients from decimal generation and
+  # rounding. The exact cases were additionally checked absent from training.
+  - name: division_exact_q_1digit
+    scope: structural
+    principle: Exact non-unit quotients from two through nine, including three-digit divisors.
+    data:
+      - "512/64="
+      - "729/81="
+      - "864/108="
+      - "936/117="
+      - "777/111="
+      - "684/114="
+      - "615/123="
+      - "492/123="
+      - "369/123="
+      - "246/123="
+      - "945/135="
+      - "888/222="
+
+  - name: division_exact_q_2digit
+    scope: structural
+    principle: Exact two-digit quotients across one- and two-digit divisors.
+    data:
+      - "625/25="
+      - "840/35="
+      - "999/27="
+      - "672/21="
+      - "756/28="
+      - "945/35="
+      - "888/24="
+      - "924/12="
+      - "900/30="
+      - "816/17="
+      - "986/17="
+      - "936/18="
+
+  - name: division_exact_q_3digit
+    scope: structural
+    principle: Exact three-digit quotients requiring a one-digit divisor.
+    data:
+      - "864/8="
+      - "924/7="
+      - "999/9="
+      - "816/4="
+      - "750/3="
+      - "994/7="
+      - "936/6="
+      - "888/8="
+      - "615/5="
+      - "848/4="
+      - "738/6="
+      - "636/3="
+
+  - name: division_near_zero_nonzero
+    scope: boundary
+    principle: Small nonzero quotients no farther than 0.05 from zero.
+    data:
+      - "28/919="
+      - "28/822="
+      - "25/792="
+      - "26/563="
+      - "20/419="
+      - "1/329="
+      - "30/641="
+      - "44/893="
+      - "19/780="
+      - "11/687="
+      - "6/527="
+      - "17/881="
+
+  - name: division_near_integer_non_exact
+    scope: boundary
+    principle: Non-exact quotients immediately below and above integers one through six.
+    data:
+      - "475/487="
+      - "503/491="
+      - "665/337="
+      - "683/337="
+      - "782/263="
+      - "797/263="
+      - "838/211="
+      - "850/211="
+      - "890/179="
+      - "900/179="
+      - "938/157="
+      - "946/157="
+
+  - name: division_terminating_1dp
+    scope: structural
+    principle: Exactly represented one-decimal quotients below and above one.
+    data:
+      - "735/175="
+      - "672/80="
+      - "415/10="
+      - "750/100="
+      - "853/2="
+      - "354/20="
+      - "444/740="
+      - "32/64="
+      - "147/490="
+      - "96/192="
+      - "328/820="
+      - "36/360="
+
+  - name: division_terminating_2dp
+    scope: structural
+    principle: Exactly represented two-decimal quotients below and above one.
+    data:
+      - "51/60="
+      - "536/800="
+      - "966/25="
+      - "747/180="
+      - "956/25="
+      - "657/292="
+      - "414/225="
+      - "648/900="
+      - "594/40="
+      - "228/912="
+      - "357/525="
+      - "44/200="
+
+  - name: division_terminating_3dp
+    scope: structural
+    principle: Exactly represented three-decimal quotients below and above one.
+    data:
+      - "289/125="
+      - "24/250="
+      - "431/200="
+      - "303/600="
+      - "802/125="
+      - "296/64="
+      - "465/600="
+      - "847/40="
+      - "783/696="
+      - "54/144="
+      - "12/125="
+      - "36/125="
+
+  - name: division_rounded_below_small
+    scope: rounding
+    principle: Rounded quotients between 0.05 and 0.1, balanced by rounding direction.
+    data:
+      - "64/663="
+      - "77/824="
+      - "53/669="
+      - "67/937="
+      - "22/345="
+      - "93/999="
+      - "52/642="
+      - "82/975="
+      - "63/659="
+      - "51/668="
+      - "49/519="
+      - "7/135="
+
+  - name: division_rounded_below_medium
+    scope: rounding
+    principle: Rounded quotients between 0.1 and 1, balanced by rounding direction.
+    data:
+      - "596/884="
+      - "314/975="
+      - "491/933="
+      - "525/926="
+      - "277/827="
+      - "323/783="
+      - "255/319="
+      - "596/990="
+      - "311/588="
+      - "111/926="
+      - "161/405="
+      - "396/559="
+
+  - name: division_rounded_ge1_q1digit
+    scope: rounding
+    principle: Rounded quotients from one through nine, balanced by rounding direction.
+    data:
+      - "271/57="
+      - "848/683="
+      - "456/307="
+      - "917/223="
+      - "621/528="
+      - "895/767="
+      - "690/403="
+      - "753/119="
+      - "987/545="
+      - "659/608="
+      - "695/529="
+      - "689/254="
+
+  - name: division_rounded_ge1_q2digit
+    scope: rounding
+    principle: Rounded two-digit quotients, balanced by rounding direction.
+    data:
+      - "499/26="
+      - "722/67="
+      - "532/11="
+      - "432/21="
+      - "534/53="
+      - "267/21="
+      - "886/81="
+      - "865/52="
+      - "656/49="
+      - "872/11="
+      - "708/9="
+      - "870/39="
+
+  - name: division_rounded_ge1_q3digit
+    scope: rounding
+    principle: Rounded three-digit quotients, balanced by rounding direction.
+    data:
+      - "664/3="
+      - "884/6="
+      - "316/3="
+      - "968/9="
+      - "359/3="
+      - "859/6="
+      - "404/3="
+      - "458/3="
+      - "838/7="
+      - "755/7="
+      - "842/3="
+      - "705/7="
+
+  - name: division_signed
+    scope: signed
+    principle: Negative exact and rounded quotients above and below one.
+    data:
+      - "-333/3="
+      - "-87/303="
+      - "-8/956="
+      - "-478/391="
+      - "-533/4="
+      - "-32/62="
+      - "-12/8="
+      - "-29/3="
+      - "-829/66="
+      - "-587/74="
+      - "-444/9="
+      - "-970/5="
+
+  - name: division_identities
+    scope: edge
+    principle: Zero numerator, division by one, and equal operands.
+    data:
+      - "0/999="
+      - "999/1="
+      - "999/999="
+      - "597/1="
+      - "93/1="
+      - "0/393="
+      - "0/195="
+      - "303/1="
+      - "8/8="
+      - "9/9="
+
+  - name: division_by_zero_nan
+    scope: edge
+    principle: Every zero divisor returns the categorical answer NAN.
+    data:
+      - "0/0="
+      - "1/0="
+      - "-1/0="
+      - "9/0="
+      - "-37/0="
+      - "100/0="
+      - "-333/0="
+      - "777/0="
+      - "-999/0="
+      - "508/0="
+
+  # Both orders of each pair are unseen. Passing both checks operand-order
+  # invariance without requiring operands beyond the supported domain.
+  - name: commutative_consistency
+    scope: consistency
+    principle: Addition and multiplication should be invariant to swapping operands.
+    data:
+      - "793+144="
+      - "144+793="
+      - "632+223="
+      - "223+632="
+      - "623+304="
+      - "304+623="
+      - "94*90="
+      - "90*94="
+      - "16*156="
+      - "156*16="
+      - "169*62="
+      - "62*169="

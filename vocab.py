@@ -5,9 +5,10 @@ PAD = "<pad>" # padding so sequences in a batch have equal length
 BOS = "<bos>" # beginning of sequence
 EOS = "<eos>" # end of sequence -> teaches the model when to STOP
 UNK = "<unk>" # fallback for any character not in the vocabulary
+NAN = "<nan>" # atomic categorical answer for division by zero
 
 # Keep <pad> first so PAD == index 0.
-SPECIAL_TOKENS = [PAD, BOS, EOS, UNK]
+SPECIAL_TOKENS = [PAD, BOS, EOS, UNK, NAN]
 
 # --- Content tokens ---------------------------------------------
 DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] # 0-9 as character
@@ -30,12 +31,21 @@ def encode(input: str, stoi: dict[str, int]) -> list[int]:
     Unknown characters map to <unk> instead of crashing.
     """
     ids: list[int] = []
-    for i in range(len(input)):
+    i = 0
+    while i < len(input):
+        if input.startswith("NAN", i):
+            ids.append(stoi[NAN])
+            i += 3
+            continue
         ch = input[i]
-        if ch == '-' and (i==0 or input[i-1]=='=') : # -10+32=22 -> ~10+32=22 or -10-20=-30 -> ~10-20=~30
+        if ch == '-' and (
+                i == 0 or input[i-1] == '=' or input[i-1] in OPERATORS):
+            # Unary signs use '~', including a supported negative second
+            # multiplier: -12*-34=408 -> ~12*~34=408.
             ids.append(stoi.get('~', stoi[UNK]))
         else:
             ids.append(stoi.get(ch, stoi[UNK]))
+        i += 1
     return ids
 
 def decode(ids: list[int], itos: dict[int, str]) -> str:
@@ -44,9 +54,11 @@ def decode(ids: list[int], itos: dict[int, str]) -> str:
     chars: list[str] = []
     for id in ids:
         token: str = itos.get(id, UNK)
-        if token == PAD or token == BOS or token == EOS or token==UNK:
+        if token == NAN:
+            chars.append("NAN")
+        elif token == PAD or token == BOS or token == EOS or token == UNK:
             continue
-        if token == '~':
+        elif token == '~':
             chars.append('-')
         else:
             chars.append(token)

@@ -1,0 +1,35 @@
+model:
+  vocab_size: 22          # original 21 + one atomic <nan> answer token
+  max_seq_len: 20
+  d_model: 256
+  attention_heads: 8
+  n_layers: 2
+  n_loops: 8
+  dropout: 0.05
+  use_abacus: true
+  input_injection: true
+  loop_signal: true
+  abacus_base: 4
+  max_abacus_offset: 16
+  min_abacus_decimal_exponent: -3
+  max_abacus_integer_exponent: 5
+  abacus_zero_offset_probability: 0.5
+
+train:
+  data_path: sample/pretrain_v2.jsonl
+  batch_size: 128
+  epochs: 80
+  lr: 3e-4
+  weight_decay: 0.01
+  save_every: 5
+  exact_eval_every: 5
+  checkpoint_metric: scenario_min
+  target_accuracy: 0.95
+  checkpoint_path: ckp/abacus_injection_v2_256x2x8.pt
+
+eval:
+  data_path: config/pretrain_eval.yaml
+  algorithmic_data_path: config/pretrain_algorithmic_eval.yaml
+  temp: 0
+  internal_format: true
+  checkpoint_path: ckp/abacus_injection_v2_256x2x8.pt

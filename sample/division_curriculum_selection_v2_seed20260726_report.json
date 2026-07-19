@@ -1,0 +1,85 @@
+{
+  "hundreds_cell_min_max": {
+    "*": {
+      "max": 13,
+      "min": 12
+    },
+    "+": {
+      "max": 13,
+      "min": 12
+    },
+    "-": {
+      "max": 13,
+      "min": 12
+    },
+    "/": {
+      "max": 13,
+      "min": 12
+    }
+  },
+  "integrity": {
+    "all_operands_three_digits": true,
+    "excluded_prompt_overlap": 0,
+    "unique_prompts": 4000
+  },
+  "multiplication_central_bands": {
+    "0": 250,
+    "1": 250,
+    "2": 250,
+    "3": 250
+  },
+  "name": "three_digit_full_width_unseen_test_v2",
+  "rows": 4000,
+  "rows_per_operation": {
+    "*": 1000,
+    "+": 1000,
+    "-": 1000,
+    "/": 1000
+  },
+  "scenario_counts": {
+    "*|contains_zero_digit": 367,
+    "*|dense_mixed_digits": 619,
+    "*|repeated_digit_operand": 14,
+    "+|cascading_carry_one_step": 60,
+    "+|independent_multi_carry": 36,
+    "+|no_carry": 112,
+    "+|overflow_non_cascading": 440,
+    "+|signed_negative_borrow_across_zero": 4,
+    "+|signed_negative_multi_borrow": 16,
+    "+|signed_negative_simple": 68,
+    "+|signed_positive_borrow_across_zero": 2,
+    "+|signed_positive_multi_borrow": 24,
+    "+|signed_positive_simple": 86,
+    "+|single_carry": 152,
+    "-|borrow_across_zero": 14,
+    "-|multi_borrow": 64,
+    "-|negative_result_borrow_across_zero": 6,
+    "-|negative_result_multi_borrow": 55,
+    "-|negative_result_simple": 336,
+    "-|no_borrow": 136,
+    "-|signed_cascading_carry": 19,
+    "-|signed_independent_multi_carry": 79,
+    "-|signed_low_carry": 102,
+    "-|single_borrow": 189,
+    "/|near_integer_above": 34,
+    "/|near_integer_below": 51,
+    "/|rounded_below_medium": 476,
+    "/|rounded_ge1_q1digit": 433,
+    "/|terminating_at_least_one_1dp": 2,
+    "/|terminating_at_least_one_2dp": 1,
+    "/|terminating_at_least_one_3dp": 2,
+    "/|terminating_below_one_3dp": 1
+  },
+  "seed": 20260726,
+  "sign_counts": {
+    "*|negative_negative": 100,
+    "*|negative_positive": 100,
+    "*|positive_positive": 800,
+    "+|negative": 200,
+    "+|positive": 800,
+    "-|negative": 200,
+    "-|positive": 800,
+    "/|negative": 200,
+    "/|positive": 800
+  }
+}

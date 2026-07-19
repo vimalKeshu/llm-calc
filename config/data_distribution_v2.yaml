@@ -1,0 +1,208 @@
+version: 2
+name: three_digit_calculator_balanced_mechanisms
+
+domain:
+  max_operand: 999
+  operations: ["+", "-", "*", "/"]
+  negative_first_operand_ratio: 0.20
+  vocabulary_size: 22
+  division_decimal_places: 3
+  division_by_zero_answer: NAN
+  representation: abacus-v1
+
+dataset:
+  seed: 42
+  train_rows: 400000
+  validation_rows: 4000
+  output_path: sample/pretrain_v2.jsonl
+  report_path: sample/pretrain_v2_report.json
+  max_train_repetitions_per_prompt: 25
+  candidate_pool_cap: 25000
+  candidate_pool_multiplier: 4
+  reserved_test_suites:
+    - config/pretrain_algorithmic_eval.yaml
+
+# Applied to addition, subtraction, and multiplication. Division overrides it
+# below because its quotient-width bands require more one-digit divisors.
+operand_length_weights:
+  1x1: 0.001
+  1x2: 0.009
+  1x3: 0.040
+  2x1: 0.009
+  2x2: 0.061
+  2x3: 0.140
+  3x1: 0.040
+  3x2: 0.140
+  3x3: 0.560
+
+operations:
+  "+":
+    weight: 0.25
+    digit_pattern_weights:
+      contains_zero_digit: 0.20
+      no_zero_digits: 0.80
+    scenario_weights:
+      identity_or_zero: 0.04
+      no_carry: 0.14
+      single_carry: 0.16
+      independent_multi_carry: 0.14
+      cascading_carry_one_step: 0.10
+      cascading_carry_two_step: 0.06
+      overflow_non_cascading: 0.16
+      signed_negative_simple: 0.03
+      signed_negative_multi_borrow: 0.03
+      signed_negative_borrow_across_zero: 0.02
+      signed_result_zero: 0.02
+      signed_positive_simple: 0.04
+      signed_positive_multi_borrow: 0.04
+      signed_positive_borrow_across_zero: 0.02
+    three_by_three:
+      left_hundreds_by_right_hundreds: uniform
+    scenario_length_band_weights:
+      identity_or_zero: {small: 0.25, left_mixed: 0.375, right_mixed: 0.375}
+      no_carry: {small: 0.10, left_mixed: 0.25, right_mixed: 0.25, full: 0.40}
+      single_carry: {small: 0.10, left_mixed: 0.275, right_mixed: 0.275, full: 0.35}
+      independent_multi_carry: {small: 0.10, left_mixed: 0.125, right_mixed: 0.125, full: 0.65}
+      cascading_carry_one_step: {small: 0.10, left_mixed: 0.125, right_mixed: 0.125, full: 0.65}
+      cascading_carry_two_step: {left_mixed: 0.10, right_mixed: 0.10, full: 0.80}
+      overflow_non_cascading: {full: 1.0}
+      signed_negative_simple: {small: 0.2333333333, left_mixed: 0.4666666667, full: 0.30}
+      signed_negative_multi_borrow: {left_mixed: 0.40, full: 0.60}
+      signed_negative_borrow_across_zero: {left_mixed: 0.50, full: 0.50}
+      signed_result_zero: {small: 0.20, full: 0.80}
+      signed_positive_simple: {small: 0.125, right_mixed: 0.50, full: 0.375}
+      signed_positive_multi_borrow: {right_mixed: 0.25, full: 0.75}
+      signed_positive_borrow_across_zero: {right_mixed: 0.30, full: 0.70}
+
+  "-":
+    weight: 0.25
+    digit_pattern_weights:
+      contains_zero_digit: 0.25
+      no_zero_digits: 0.75
+    scenario_weights:
+      subtract_zero: 0.03
+      equal_operands: 0.02
+      no_borrow: 0.09
+      single_borrow: 0.11
+      multi_borrow: 0.11
+      borrow_across_zero: 0.04
+      negative_result_simple: 0.12
+      negative_result_multi_borrow: 0.16
+      negative_result_borrow_across_zero: 0.12
+      signed_low_carry: 0.10
+      signed_independent_multi_carry: 0.05
+      signed_cascading_carry: 0.05
+    three_by_three:
+      minuend_hundreds_by_subtrahend_hundreds: uniform
+    scenario_length_band_weights:
+      subtract_zero: {small: 0.20, left_mixed: 0.80}
+      equal_operands: {small: 0.20, full: 0.80}
+      no_borrow: {small: 0.10, left_mixed: 0.45, full: 0.45}
+      single_borrow: {small: 0.05, left_mixed: 0.35, full: 0.60}
+      multi_borrow: {left_mixed: 0.20, full: 0.80}
+      borrow_across_zero: {left_mixed: 0.25, full: 0.75}
+      negative_result_simple: {small: 0.17, right_mixed: 0.40, full: 0.43}
+      negative_result_multi_borrow: {right_mixed: 0.3625, full: 0.6375}
+      negative_result_borrow_across_zero: {right_mixed: 0.34, full: 0.66}
+      signed_low_carry: {small: 0.08, left_mixed: 0.18, right_mixed: 0.18, full: 0.56}
+      signed_independent_multi_carry: {small: 0.08, left_mixed: 0.18, right_mixed: 0.18, full: 0.56}
+      signed_cascading_carry: {small: 0.08, left_mixed: 0.18, right_mixed: 0.18, full: 0.56}
+
+  "*":
+    weight: 0.25
+    sign_pattern_weights:
+      positive_positive: 0.80
+      negative_positive: 0.10
+      negative_negative: 0.10
+    scenario_weights:
+      identity_or_zero: 0.05
+      contains_zero_digit: 0.20
+      repeated_digit_operand: 0.10
+      dense_mixed_digits: 0.65
+    scenario_length_band_weights:
+      identity_or_zero: {small: 0.20, left_mixed: 0.40, right_mixed: 0.40}
+      contains_zero_digit: {small: 0.0736842105, left_mixed: 0.1684210526, right_mixed: 0.1684210526, full: 0.5894736843}
+      repeated_digit_operand: {small: 0.0736842105, left_mixed: 0.1684210526, right_mixed: 0.1684210526, full: 0.5894736843}
+      dense_mixed_digits: {small: 0.0736842105, left_mixed: 0.1684210526, right_mixed: 0.1684210526, full: 0.5894736843}
+    three_by_three:
+      hundreds_cells: uniform
+      central_total_bands: within_cell_quartiles
+      central_total_band_weights: [0.25, 0.25, 0.25, 0.25]
+      scenario_central_band_weights: [0.25, 0.25, 0.25, 0.25]
+
+  "/":
+    weight: 0.25
+    # Division needs substantially more one-digit divisors than the shared
+    # matrix provides, otherwise /0 and /1 consume the entire 1-digit budget.
+    operand_length_weights:
+      1x1: 0.01
+      1x2: 0.03
+      1x3: 0.03
+      2x1: 0.08
+      2x2: 0.08
+      2x3: 0.05
+      3x1: 0.21
+      3x2: 0.21
+      3x3: 0.30
+    sign_pattern_weights:
+      positive: 0.80
+      negative: 0.20
+    rounding_direction_weights:
+      down: 0.50
+      up: 0.50
+    scenario_weights:
+      division_by_zero: 0.04
+      zero_numerator: 0.02
+      divide_by_one: 0.03
+      unit_quotient: 0.03
+      exact_q_1digit: 0.10
+      exact_q_2digit: 0.09
+      exact_q_3digit: 0.03
+      near_zero_nonzero: 0.03
+      near_integer_below: 0.05
+      near_integer_above: 0.05
+      terminating_below_one_1dp: 0.02
+      terminating_below_one_2dp: 0.02
+      terminating_below_one_3dp: 0.02
+      terminating_at_least_one_1dp: 0.02
+      terminating_at_least_one_2dp: 0.02
+      terminating_at_least_one_3dp: 0.02
+      rounded_below_small: 0.05
+      rounded_below_medium: 0.10
+      rounded_ge1_q1digit: 0.13
+      rounded_ge1_q2digit: 0.09
+      rounded_ge1_q3digit: 0.04
+    three_by_three:
+      numerator_hundreds_by_divisor_hundreds: uniform
+
+validation:
+  unique_prompts: true
+  exclude_validation_prompts_from_train: true
+  exclude_swapped_validation_prompts_for_commutative_ops: true
+  exact_operation_quotas: true
+  exact_operand_length_quotas: true
+  exact_sign_quotas_within_length_cells: true
+  exact_multiplication_sign_pattern_quotas: true
+  exact_multiplication_scenario_length_band_quotas: true
+  exact_multiplication_scenario_central_band_quotas: true
+  exact_scenario_quotas: true
+  exact_add_sub_digit_pattern_quotas: true
+  exact_add_sub_scenario_digit_pattern_quotas: true
+  exact_add_sub_scenario_length_band_quotas: true
+  exact_subtraction_sign_quotas_within_hundreds_cells: true
+  addition_subtraction_3x3_hundreds_cell_max_difference: 1
+  exact_division_sign_quotas_by_scenario: true
+  exact_division_rounding_direction_quotas: true
+  min_validation_rows_per_scenario: 20
+  min_validation_rows_per_multiplication_hundreds_cell: 6
+  min_validation_rows_per_multiplication_cell_band: 1
+  min_validation_rows_per_multiplication_central_band: 140
+  min_validation_rows_per_multiplication_scenario_sign: 1
+  min_validation_rows_per_division_hundreds_cell: 3
+  min_validation_rows_per_division_rounding_direction: 10
+  min_validation_rows_per_add_sub_hundreds_cell: 6
+  min_validation_rows_three_by_three_negative_result: 100
+  multiplication_3x3_hundreds_cell_max_difference: 1
+  multiplication_3x3_central_band_max_difference_per_cell: 1
+  require_arithmetic_verification: true
+  require_supported_sequence_length: 20

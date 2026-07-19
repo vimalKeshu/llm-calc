@@ -1,0 +1,1034 @@
+➜  llm-calc git:(abacus_embedding) ✗ python -u pretrain.py --config config/pretrain_v3_compact_division_256x2x8.yaml
+device: mps
+parameters: 1,597,184
+epoch   1/80  train_loss=1.7854  val_loss=1.3701
+epoch   2/80  train_loss=1.2752  val_loss=1.1176
+epoch   3/80  train_loss=1.0151  val_loss=0.7996
+epoch   4/80  train_loss=0.6815  val_loss=0.5627
+epoch   5/80  train_loss=0.5318  val_loss=0.4941
+
+accuracy by tier:
+  0 trivial   232/233  =  99.6%
+  1 easy       13/19   =  68.4%
+  2 medium    376/449  =  83.7%
+  3 hard     1022/1578 =  64.8%
+  4 hardest   895/2721 =  32.9%
+accuracy by op:
+  +           993/1000 =  99.3%
+  -           977/1000 =  97.7%
+  /           498/2000 =  24.9%
+  *            70/1000 =   7.0%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   29/30   =  96.7%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   34/40   =  85.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           19/20   =  95.0%
+  - multi_borrow                            109/110  =  99.1%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  107/120  =  89.2%
+  - no_borrow                                88/90   =  97.8%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                         98/100  =  98.0%
+  - single_borrow                           106/110  =  96.4%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          104/120  =  86.7%
+  / exact_q_2digit                          110/240  =  45.8%
+  / exact_q_3digit                           20/40   =  50.0%
+  / near_integer_above                       10/160  =   6.2%
+  / near_integer_below                       28/160  =  17.5%
+  / near_zero_nonzero                        17/40   =  42.5%
+  / rounded_below_medium                      8/340  =   2.4%
+  / rounded_below_small                      12/50   =  24.0%
+  / rounded_ge1_q1digit                       4/320  =   1.2%
+  / rounded_ge1_q2digit                       5/100  =   5.0%
+  / rounded_ge1_q3digit                       3/20   =  15.0%
+  / terminating_at_least_one_1dp             10/50   =  20.0%
+  / terminating_at_least_one_2dp              6/70   =   8.6%
+  / terminating_at_least_one_3dp              6/80   =   7.5%
+  / terminating_below_one_1dp                16/30   =  53.3%
+  / terminating_below_one_2dp                14/30   =  46.7%
+  / terminating_below_one_3dp                11/30   =  36.7%
+  / unit_quotient                            24/30   =  80.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                      18/200  =   9.0%
+  * dense_mixed_digits                        1/650  =   0.2%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                    1/100  =   1.0%
+  overall    2538/5000 =  50.8%
+  macro scenario accuracy   =  68.9%
+  minimum scenario accuracy =   0.2%
+minimum validation scenario accuracy: 0.2%
+new best worst-category checkpoint -> ckp/pretrain_v3_compact_division_256x2x8.pt
+epoch   6/80  train_loss=0.4652  val_loss=0.4352
+epoch   7/80  train_loss=0.4178  val_loss=0.4067
+epoch   8/80  train_loss=0.3784  val_loss=0.3656
+epoch   9/80  train_loss=0.3402  val_loss=0.3258
+epoch  10/80  train_loss=0.3060  val_loss=0.2990
+
+accuracy by tier:
+  0 trivial   233/233  = 100.0%
+  1 easy       17/19   =  89.5%
+  2 medium    435/449  =  96.9%
+  3 hard     1317/1578 =  83.5%
+  4 hardest  1091/2721 =  40.1%
+accuracy by op:
+  +           997/1000 =  99.7%
+  -           995/1000 =  99.5%
+  /           920/2000 =  46.0%
+  *           181/1000 =  18.1%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                139/140  =  99.3%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   30/30   = 100.0%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            158/160  =  98.8%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  117/120  =  97.5%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                         99/100  =  99.0%
+  - single_borrow                           109/110  =  99.1%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          117/120  =  97.5%
+  / exact_q_2digit                          187/240  =  77.9%
+  / exact_q_3digit                           39/40   =  97.5%
+  / near_integer_above                       99/160  =  61.9%
+  / near_integer_below                       54/160  =  33.8%
+  / near_zero_nonzero                        32/40   =  80.0%
+  / rounded_below_medium                     28/340  =   8.2%
+  / rounded_below_small                      22/50   =  44.0%
+  / rounded_ge1_q1digit                       9/320  =   2.8%
+  / rounded_ge1_q2digit                      21/100  =  21.0%
+  / rounded_ge1_q3digit                      17/20   =  85.0%
+  / terminating_at_least_one_1dp             13/50   =  26.0%
+  / terminating_at_least_one_2dp             45/70   =  64.3%
+  / terminating_at_least_one_3dp             37/80   =  46.2%
+  / terminating_below_one_1dp                29/30   =  96.7%
+  / terminating_below_one_2dp                25/30   =  83.3%
+  / terminating_below_one_3dp                26/30   =  86.7%
+  / unit_quotient                            30/30   = 100.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                      73/200  =  36.5%
+  * dense_mixed_digits                       48/650  =   7.4%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   10/100  =  10.0%
+  overall    3093/5000 =  61.9%
+  macro scenario accuracy   =  81.6%
+  minimum scenario accuracy =   2.8%
+minimum validation scenario accuracy: 2.8%
+new best worst-category checkpoint -> ckp/pretrain_v3_compact_division_256x2x8.pt
+epoch  11/80  train_loss=0.2790  val_loss=0.2756
+epoch  12/80  train_loss=0.2580  val_loss=0.2623
+epoch  13/80  train_loss=0.2397  val_loss=0.2454
+epoch  14/80  train_loss=0.2240  val_loss=0.2324
+epoch  15/80  train_loss=0.2108  val_loss=0.2195
+
+accuracy by tier:
+  0 trivial   232/233  =  99.6%
+  1 easy       19/19   = 100.0%
+  2 medium    435/449  =  96.9%
+  3 hard     1449/1578 =  91.8%
+  4 hardest  1289/2721 =  47.4%
+accuracy by op:
+  +           999/1000 =  99.9%
+  -           997/1000 =  99.7%
+  /          1124/2000 =  56.2%
+  *           304/1000 =  30.4%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   29/30   =  96.7%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  118/120  =  98.3%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                        100/100  = 100.0%
+  - single_borrow                           109/110  =  99.1%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          118/120  =  98.3%
+  / exact_q_2digit                          225/240  =  93.8%
+  / exact_q_3digit                           40/40   = 100.0%
+  / near_integer_above                      134/160  =  83.8%
+  / near_integer_below                       76/160  =  47.5%
+  / near_zero_nonzero                        39/40   =  97.5%
+  / rounded_below_medium                     61/340  =  17.9%
+  / rounded_below_small                      24/50   =  48.0%
+  / rounded_ge1_q1digit                      14/320  =   4.4%
+  / rounded_ge1_q2digit                      30/100  =  30.0%
+  / rounded_ge1_q3digit                      20/20   = 100.0%
+  / terminating_at_least_one_1dp             30/50   =  60.0%
+  / terminating_at_least_one_2dp             62/70   =  88.6%
+  / terminating_at_least_one_3dp             53/80   =  66.2%
+  / terminating_below_one_1dp                24/30   =  80.0%
+  / terminating_below_one_2dp                29/30   =  96.7%
+  / terminating_below_one_3dp                27/30   =  90.0%
+  / unit_quotient                            29/30   =  96.7%
+  / zero_numerator                           19/20   =  95.0%
+  * contains_zero_digit                     123/200  =  61.5%
+  * dense_mixed_digits                      103/650  =  15.8%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   28/100  =  28.0%
+  overall    3424/5000 =  68.5%
+  macro scenario accuracy   =  86.2%
+  minimum scenario accuracy =   4.4%
+minimum validation scenario accuracy: 4.4%
+new best worst-category checkpoint -> ckp/pretrain_v3_compact_division_256x2x8.pt
+epoch  16/80  train_loss=0.1991  val_loss=0.2092
+epoch  17/80  train_loss=0.1882  val_loss=0.2001
+epoch  18/80  train_loss=0.1778  val_loss=0.2006
+epoch  19/80  train_loss=0.1684  val_loss=0.1864
+epoch  20/80  train_loss=0.1597  val_loss=0.1734
+
+accuracy by tier:
+  0 trivial   233/233  = 100.0%
+  1 easy       19/19   = 100.0%
+  2 medium    439/449  =  97.8%
+  3 hard     1487/1578 =  94.2%
+  4 hardest  1494/2721 =  54.9%
+accuracy by op:
+  +          1000/1000 = 100.0%
+  -           998/1000 =  99.8%
+  /          1215/2000 =  60.8%
+  *           459/1000 =  45.9%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   30/30   = 100.0%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  118/120  =  98.3%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                        100/100  = 100.0%
+  - single_borrow                           110/110  = 100.0%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          116/120  =  96.7%
+  / exact_q_2digit                          230/240  =  95.8%
+  / exact_q_3digit                           40/40   = 100.0%
+  / near_integer_above                      146/160  =  91.2%
+  / near_integer_below                       89/160  =  55.6%
+  / near_zero_nonzero                        38/40   =  95.0%
+  / rounded_below_medium                     74/340  =  21.8%
+  / rounded_below_small                      36/50   =  72.0%
+  / rounded_ge1_q1digit                      25/320  =   7.8%
+  / rounded_ge1_q2digit                      38/100  =  38.0%
+  / rounded_ge1_q3digit                      19/20   =  95.0%
+  / terminating_at_least_one_1dp             33/50   =  66.0%
+  / terminating_at_least_one_2dp             69/70   =  98.6%
+  / terminating_at_least_one_3dp             59/80   =  73.8%
+  / terminating_below_one_1dp                25/30   =  83.3%
+  / terminating_below_one_2dp                29/30   =  96.7%
+  / terminating_below_one_3dp                29/30   =  96.7%
+  / unit_quotient                            30/30   = 100.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                     150/200  =  75.0%
+  * dense_mixed_digits                      203/650  =  31.2%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   56/100  =  56.0%
+  overall    3672/5000 =  73.4%
+  macro scenario accuracy   =  89.1%
+  minimum scenario accuracy =   7.8%
+minimum validation scenario accuracy: 7.8%
+new best worst-category checkpoint -> ckp/pretrain_v3_compact_division_256x2x8.pt
+epoch  21/80  train_loss=0.1520  val_loss=0.1723
+epoch  22/80  train_loss=0.1444  val_loss=0.1688
+epoch  23/80  train_loss=0.1376  val_loss=0.1568
+epoch  24/80  train_loss=0.1316  val_loss=0.1563
+epoch  25/80  train_loss=0.1258  val_loss=0.1489
+
+accuracy by tier:
+  0 trivial   233/233  = 100.0%
+  1 easy       19/19   = 100.0%
+  2 medium    443/449  =  98.7%
+  3 hard     1500/1578 =  95.1%
+  4 hardest  1637/2721 =  60.2%
+accuracy by op:
+  +          1000/1000 = 100.0%
+  -           996/1000 =  99.6%
+  /          1250/2000 =  62.5%
+  *           586/1000 =  58.6%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   30/30   = 100.0%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  116/120  =  96.7%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                        100/100  = 100.0%
+  - single_borrow                           110/110  = 100.0%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          120/120  = 100.0%
+  / exact_q_2digit                          235/240  =  97.9%
+  / exact_q_3digit                           40/40   = 100.0%
+  / near_integer_above                      137/160  =  85.6%
+  / near_integer_below                      101/160  =  63.1%
+  / near_zero_nonzero                        40/40   = 100.0%
+  / rounded_below_medium                     88/340  =  25.9%
+  / rounded_below_small                      35/50   =  70.0%
+  / rounded_ge1_q1digit                      23/320  =   7.2%
+  / rounded_ge1_q2digit                      41/100  =  41.0%
+  / rounded_ge1_q3digit                      20/20   = 100.0%
+  / terminating_at_least_one_1dp             35/50   =  70.0%
+  / terminating_at_least_one_2dp             62/70   =  88.6%
+  / terminating_at_least_one_3dp             69/80   =  86.2%
+  / terminating_below_one_1dp                27/30   =  90.0%
+  / terminating_below_one_2dp                29/30   =  96.7%
+  / terminating_below_one_3dp                28/30   =  93.3%
+  / unit_quotient                            30/30   = 100.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                     169/200  =  84.5%
+  * dense_mixed_digits                      292/650  =  44.9%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   75/100  =  75.0%
+  overall    3832/5000 =  76.6%
+  macro scenario accuracy   =  90.5%
+  minimum scenario accuracy =   7.2%
+minimum validation scenario accuracy: 7.2%
+epoch  26/80  train_loss=0.1203  val_loss=0.1441
+epoch  27/80  train_loss=0.1155  val_loss=0.1400
+epoch  28/80  train_loss=0.1105  val_loss=0.1368
+epoch  29/80  train_loss=0.1066  val_loss=0.1360
+epoch  30/80  train_loss=0.1023  val_loss=0.1321
+
+accuracy by tier:
+  0 trivial   233/233  = 100.0%
+  1 easy       19/19   = 100.0%
+  2 medium    447/449  =  99.6%
+  3 hard     1508/1578 =  95.6%
+  4 hardest  1772/2721 =  65.1%
+accuracy by op:
+  +          1000/1000 = 100.0%
+  -           993/1000 =  99.3%
+  /          1310/2000 =  65.5%
+  *           676/1000 =  67.6%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   30/30   = 100.0%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  113/120  =  94.2%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                        100/100  = 100.0%
+  - single_borrow                           110/110  = 100.0%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          120/120  = 100.0%
+  / exact_q_2digit                          239/240  =  99.6%
+  / exact_q_3digit                           40/40   = 100.0%
+  / near_integer_above                      145/160  =  90.6%
+  / near_integer_below                      108/160  =  67.5%
+  / near_zero_nonzero                        40/40   = 100.0%
+  / rounded_below_medium                    112/340  =  32.9%
+  / rounded_below_small                      34/50   =  68.0%
+  / rounded_ge1_q1digit                      28/320  =   8.8%
+  / rounded_ge1_q2digit                      50/100  =  50.0%
+  / rounded_ge1_q3digit                      18/20   =  90.0%
+  / terminating_at_least_one_1dp             33/50   =  66.0%
+  / terminating_at_least_one_2dp             65/70   =  92.9%
+  / terminating_at_least_one_3dp             70/80   =  87.5%
+  / terminating_below_one_1dp                28/30   =  93.3%
+  / terminating_below_one_2dp                30/30   = 100.0%
+  / terminating_below_one_3dp                30/30   = 100.0%
+  / unit_quotient                            30/30   = 100.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                     167/200  =  83.5%
+  * dense_mixed_digits                      378/650  =  58.2%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   81/100  =  81.0%
+  overall    3979/5000 =  79.6%
+  macro scenario accuracy   =  91.4%
+  minimum scenario accuracy =   8.8%
+minimum validation scenario accuracy: 8.8%
+new best worst-category checkpoint -> ckp/pretrain_v3_compact_division_256x2x8.pt
+epoch  31/80  train_loss=0.0982  val_loss=0.1252
+epoch  32/80  train_loss=0.0946  val_loss=0.1252
+epoch  33/80  train_loss=0.0911  val_loss=0.1221
+epoch  34/80  train_loss=0.0873  val_loss=0.1198
+epoch  35/80  train_loss=0.0841  val_loss=0.1212
+
+accuracy by tier:
+  0 trivial   233/233  = 100.0%
+  1 easy       19/19   = 100.0%
+  2 medium    449/449  = 100.0%
+  3 hard     1537/1578 =  97.4%
+  4 hardest  1881/2721 =  69.1%
+accuracy by op:
+  +          1000/1000 = 100.0%
+  -           993/1000 =  99.3%
+  /          1346/2000 =  67.3%
+  *           780/1000 =  78.0%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   30/30   = 100.0%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  113/120  =  94.2%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                        100/100  = 100.0%
+  - single_borrow                           110/110  = 100.0%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          120/120  = 100.0%
+  / exact_q_2digit                          239/240  =  99.6%
+  / exact_q_3digit                           40/40   = 100.0%
+  / near_integer_above                      150/160  =  93.8%
+  / near_integer_below                      115/160  =  71.9%
+  / near_zero_nonzero                        40/40   = 100.0%
+  / rounded_below_medium                    111/340  =  32.6%
+  / rounded_below_small                      39/50   =  78.0%
+  / rounded_ge1_q1digit                      24/320  =   7.5%
+  / rounded_ge1_q2digit                      51/100  =  51.0%
+  / rounded_ge1_q3digit                      20/20   = 100.0%
+  / terminating_at_least_one_1dp             42/50   =  84.0%
+  / terminating_at_least_one_2dp             69/70   =  98.6%
+  / terminating_at_least_one_3dp             76/80   =  95.0%
+  / terminating_below_one_1dp                30/30   = 100.0%
+  / terminating_below_one_2dp                30/30   = 100.0%
+  / terminating_below_one_3dp                30/30   = 100.0%
+  / unit_quotient                            30/30   = 100.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                     181/200  =  90.5%
+  * dense_mixed_digits                      461/650  =  70.9%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   88/100  =  88.0%
+  overall    4119/5000 =  82.4%
+  macro scenario accuracy   =  93.2%
+  minimum scenario accuracy =   7.5%
+minimum validation scenario accuracy: 7.5%
+epoch  36/80  train_loss=0.0809  val_loss=0.1124
+epoch  37/80  train_loss=0.0776  val_loss=0.1190
+epoch  38/80  train_loss=0.0750  val_loss=0.1151
+epoch  39/80  train_loss=0.0721  val_loss=0.1130
+epoch  40/80  train_loss=0.0691  val_loss=0.1103
+
+accuracy by tier:
+  0 trivial   233/233  = 100.0%
+  1 easy       19/19   = 100.0%
+  2 medium    446/449  =  99.3%
+  3 hard     1535/1578 =  97.3%
+  4 hardest  2026/2721 =  74.5%
+accuracy by op:
+  +          1000/1000 = 100.0%
+  -           998/1000 =  99.8%
+  /          1389/2000 =  69.5%
+  *           872/1000 =  87.2%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   30/30   = 100.0%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  118/120  =  98.3%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                        100/100  = 100.0%
+  - single_borrow                           110/110  = 100.0%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          119/120  =  99.2%
+  / exact_q_2digit                          237/240  =  98.8%
+  / exact_q_3digit                           40/40   = 100.0%
+  / near_integer_above                      154/160  =  96.2%
+  / near_integer_below                      127/160  =  79.4%
+  / near_zero_nonzero                        40/40   = 100.0%
+  / rounded_below_medium                    136/340  =  40.0%
+  / rounded_below_small                      39/50   =  78.0%
+  / rounded_ge1_q1digit                      38/320  =  11.9%
+  / rounded_ge1_q2digit                      52/100  =  52.0%
+  / rounded_ge1_q3digit                      20/20   = 100.0%
+  / terminating_at_least_one_1dp             39/50   =  78.0%
+  / terminating_at_least_one_2dp             65/70   =  92.9%
+  / terminating_at_least_one_3dp             75/80   =  93.8%
+  / terminating_below_one_1dp                28/30   =  93.3%
+  / terminating_below_one_2dp                30/30   = 100.0%
+  / terminating_below_one_3dp                30/30   = 100.0%
+  / unit_quotient                            30/30   = 100.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                     190/200  =  95.0%
+  * dense_mixed_digits                      539/650  =  82.9%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   93/100  =  93.0%
+  overall    4259/5000 =  85.2%
+  macro scenario accuracy   =  93.8%
+  minimum scenario accuracy =  11.9%
+minimum validation scenario accuracy: 11.9%
+new best worst-category checkpoint -> ckp/pretrain_v3_compact_division_256x2x8.pt
+epoch  41/80  train_loss=0.0664  val_loss=0.1094
+epoch  42/80  train_loss=0.0637  val_loss=0.1064
+epoch  43/80  train_loss=0.0614  val_loss=0.1064
+epoch  44/80  train_loss=0.0589  val_loss=0.1048
+epoch  45/80  train_loss=0.0570  val_loss=0.1049
+
+accuracy by tier:
+  0 trivial   233/233  = 100.0%
+  1 easy       19/19   = 100.0%
+  2 medium    449/449  = 100.0%
+  3 hard     1528/1578 =  96.8%
+  4 hardest  2055/2721 =  75.5%
+accuracy by op:
+  +          1000/1000 = 100.0%
+  -           998/1000 =  99.8%
+  /          1391/2000 =  69.5%
+  *           895/1000 =  89.5%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   30/30   = 100.0%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  118/120  =  98.3%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                        100/100  = 100.0%
+  - single_borrow                           110/110  = 100.0%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          119/120  =  99.2%
+  / exact_q_2digit                          234/240  =  97.5%
+  / exact_q_3digit                           40/40   = 100.0%
+  / near_integer_above                      154/160  =  96.2%
+  / near_integer_below                      123/160  =  76.9%
+  / near_zero_nonzero                        40/40   = 100.0%
+  / rounded_below_medium                    139/340  =  40.9%
+  / rounded_below_small                      37/50   =  74.0%
+  / rounded_ge1_q1digit                      38/320  =  11.9%
+  / rounded_ge1_q2digit                      52/100  =  52.0%
+  / rounded_ge1_q3digit                      20/20   = 100.0%
+  / terminating_at_least_one_1dp             40/50   =  80.0%
+  / terminating_at_least_one_2dp             69/70   =  98.6%
+  / terminating_at_least_one_3dp             76/80   =  95.0%
+  / terminating_below_one_1dp                30/30   = 100.0%
+  / terminating_below_one_2dp                30/30   = 100.0%
+  / terminating_below_one_3dp                30/30   = 100.0%
+  / unit_quotient                            30/30   = 100.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                     193/200  =  96.5%
+  * dense_mixed_digits                      557/650  =  85.7%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   95/100  =  95.0%
+  overall    4284/5000 =  85.7%
+  macro scenario accuracy   =  94.1%
+  minimum scenario accuracy =  11.9%
+minimum validation scenario accuracy: 11.9%
+epoch  46/80  train_loss=0.0544  val_loss=0.1070
+epoch  47/80  train_loss=0.0525  val_loss=0.1031
+epoch  48/80  train_loss=0.0501  val_loss=0.1091
+epoch  49/80  train_loss=0.0485  val_loss=0.1099
+epoch  50/80  train_loss=0.0465  val_loss=0.1044
+
+accuracy by tier:
+  0 trivial   233/233  = 100.0%
+  1 easy       19/19   = 100.0%
+  2 medium    449/449  = 100.0%
+  3 hard     1541/1578 =  97.7%
+  4 hardest  2122/2721 =  78.0%
+accuracy by op:
+  +          1000/1000 = 100.0%
+  -           998/1000 =  99.8%
+  /          1418/2000 =  70.9%
+  *           948/1000 =  94.8%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   30/30   = 100.0%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  118/120  =  98.3%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                        100/100  = 100.0%
+  - single_borrow                           110/110  = 100.0%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          120/120  = 100.0%
+  / exact_q_2digit                          237/240  =  98.8%
+  / exact_q_3digit                           40/40   = 100.0%
+  / near_integer_above                      158/160  =  98.8%
+  / near_integer_below                      123/160  =  76.9%
+  / near_zero_nonzero                        40/40   = 100.0%
+  / rounded_below_medium                    149/340  =  43.8%
+  / rounded_below_small                      38/50   =  76.0%
+  / rounded_ge1_q1digit                      39/320  =  12.2%
+  / rounded_ge1_q2digit                      57/100  =  57.0%
+  / rounded_ge1_q3digit                      20/20   = 100.0%
+  / terminating_at_least_one_1dp             41/50   =  82.0%
+  / terminating_at_least_one_2dp             67/70   =  95.7%
+  / terminating_at_least_one_3dp             79/80   =  98.8%
+  / terminating_below_one_1dp                30/30   = 100.0%
+  / terminating_below_one_2dp                30/30   = 100.0%
+  / terminating_below_one_3dp                30/30   = 100.0%
+  / unit_quotient                            30/30   = 100.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                     195/200  =  97.5%
+  * dense_mixed_digits                      604/650  =  92.9%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   99/100  =  99.0%
+  overall    4364/5000 =  87.3%
+  macro scenario accuracy   =  94.7%
+  minimum scenario accuracy =  12.2%
+minimum validation scenario accuracy: 12.2%
+new best worst-category checkpoint -> ckp/pretrain_v3_compact_division_256x2x8.pt
+epoch  51/80  train_loss=0.0445  val_loss=0.1030
+epoch  52/80  train_loss=0.0429  val_loss=0.1072
+epoch  53/80  train_loss=0.0411  val_loss=0.1033
+epoch  54/80  train_loss=0.0399  val_loss=0.1071
+epoch  55/80  train_loss=0.0381  val_loss=0.1062
+
+accuracy by tier:
+  0 trivial   233/233  = 100.0%
+  1 easy       17/19   =  89.5%
+  2 medium    449/449  = 100.0%
+  3 hard     1541/1578 =  97.7%
+  4 hardest  2146/2721 =  78.9%
+accuracy by op:
+  +          1000/1000 = 100.0%
+  -           998/1000 =  99.8%
+  /          1435/2000 =  71.8%
+  *           953/1000 =  95.3%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   30/30   = 100.0%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  118/120  =  98.3%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                        100/100  = 100.0%
+  - single_borrow                           110/110  = 100.0%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          118/120  =  98.3%
+  / exact_q_2digit                          238/240  =  99.2%
+  / exact_q_3digit                           40/40   = 100.0%
+  / near_integer_above                      156/160  =  97.5%
+  / near_integer_below                      122/160  =  76.2%
+  / near_zero_nonzero                        40/40   = 100.0%
+  / rounded_below_medium                    156/340  =  45.9%
+  / rounded_below_small                      39/50   =  78.0%
+  / rounded_ge1_q1digit                      46/320  =  14.4%
+  / rounded_ge1_q2digit                      63/100  =  63.0%
+  / rounded_ge1_q3digit                      20/20   = 100.0%
+  / terminating_at_least_one_1dp             43/50   =  86.0%
+  / terminating_at_least_one_2dp             69/70   =  98.6%
+  / terminating_at_least_one_3dp             77/80   =  96.2%
+  / terminating_below_one_1dp                30/30   = 100.0%
+  / terminating_below_one_2dp                30/30   = 100.0%
+  / terminating_below_one_3dp                28/30   =  93.3%
+  / unit_quotient                            30/30   = 100.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                     198/200  =  99.0%
+  * dense_mixed_digits                      610/650  =  93.8%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   95/100  =  95.0%
+  overall    4386/5000 =  87.7%
+  macro scenario accuracy   =  94.8%
+  minimum scenario accuracy =  14.4%
+minimum validation scenario accuracy: 14.4%
+new best worst-category checkpoint -> ckp/pretrain_v3_compact_division_256x2x8.pt
+epoch  56/80  train_loss=0.0366  val_loss=0.1053
+epoch  57/80  train_loss=0.0349  val_loss=0.1051
+epoch  58/80  train_loss=0.0334  val_loss=0.1094
+epoch  59/80  train_loss=0.0321  val_loss=0.1071
+epoch  60/80  train_loss=0.0308  val_loss=0.1090
+
+accuracy by tier:
+  0 trivial   233/233  = 100.0%
+  1 easy       19/19   = 100.0%
+  2 medium    449/449  = 100.0%
+  3 hard     1544/1578 =  97.8%
+  4 hardest  2146/2721 =  78.9%
+accuracy by op:
+  +          1000/1000 = 100.0%
+  -           998/1000 =  99.8%
+  /          1424/2000 =  71.2%
+  *           969/1000 =  96.9%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   30/30   = 100.0%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  118/120  =  98.3%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                        100/100  = 100.0%
+  - single_borrow                           110/110  = 100.0%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          119/120  =  99.2%
+  / exact_q_2digit                          238/240  =  99.2%
+  / exact_q_3digit                           40/40   = 100.0%
+  / near_integer_above                      153/160  =  95.6%
+  / near_integer_below                      127/160  =  79.4%
+  / near_zero_nonzero                        40/40   = 100.0%
+  / rounded_below_medium                    154/340  =  45.3%
+  / rounded_below_small                      40/50   =  80.0%
+  / rounded_ge1_q1digit                      41/320  =  12.8%
+  / rounded_ge1_q2digit                      56/100  =  56.0%
+  / rounded_ge1_q3digit                      20/20   = 100.0%
+  / terminating_at_least_one_1dp             40/50   =  80.0%
+  / terminating_at_least_one_2dp             68/70   =  97.1%
+  / terminating_at_least_one_3dp             78/80   =  97.5%
+  / terminating_below_one_1dp                30/30   = 100.0%
+  / terminating_below_one_2dp                30/30   = 100.0%
+  / terminating_below_one_3dp                30/30   = 100.0%
+  / unit_quotient                            30/30   = 100.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                     199/200  =  99.5%
+  * dense_mixed_digits                      621/650  =  95.5%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   99/100  =  99.0%
+  overall    4391/5000 =  87.8%
+  macro scenario accuracy   =  94.8%
+  minimum scenario accuracy =  12.8%
+minimum validation scenario accuracy: 12.8%
+epoch  61/80  train_loss=0.0298  val_loss=0.1083
+epoch  62/80  train_loss=0.0287  val_loss=0.1118
+epoch  63/80  train_loss=0.0274  val_loss=0.1123
+epoch  64/80  train_loss=0.0264  val_loss=0.1126
+epoch  65/80  train_loss=0.0254  val_loss=0.1148
+
+accuracy by tier:
+  0 trivial   233/233  = 100.0%
+  1 easy       18/19   =  94.7%
+  2 medium    449/449  = 100.0%
+  3 hard     1547/1578 =  98.0%
+  4 hardest  2172/2721 =  79.8%
+accuracy by op:
+  +          1000/1000 = 100.0%
+  -           998/1000 =  99.8%
+  /          1448/2000 =  72.4%
+  *           973/1000 =  97.3%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   30/30   = 100.0%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  118/120  =  98.3%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                        100/100  = 100.0%
+  - single_borrow                           110/110  = 100.0%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          118/120  =  98.3%
+  / exact_q_2digit                          240/240  = 100.0%
+  / exact_q_3digit                           40/40   = 100.0%
+  / near_integer_above                      159/160  =  99.4%
+  / near_integer_below                      130/160  =  81.2%
+  / near_zero_nonzero                        40/40   = 100.0%
+  / rounded_below_medium                    161/340  =  47.4%
+  / rounded_below_small                      39/50   =  78.0%
+  / rounded_ge1_q1digit                      47/320  =  14.7%
+  / rounded_ge1_q2digit                      55/100  =  55.0%
+  / rounded_ge1_q3digit                      20/20   = 100.0%
+  / terminating_at_least_one_1dp             42/50   =  84.0%
+  / terminating_at_least_one_2dp             70/70   = 100.0%
+  / terminating_at_least_one_3dp             78/80   =  97.5%
+  / terminating_below_one_1dp                30/30   = 100.0%
+  / terminating_below_one_2dp                30/30   = 100.0%
+  / terminating_below_one_3dp                29/30   =  96.7%
+  / unit_quotient                            30/30   = 100.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                     198/200  =  99.0%
+  * dense_mixed_digits                      628/650  =  96.6%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   97/100  =  97.0%
+  overall    4419/5000 =  88.4%
+  macro scenario accuracy   =  95.0%
+  minimum scenario accuracy =  14.7%
+minimum validation scenario accuracy: 14.7%
+new best worst-category checkpoint -> ckp/pretrain_v3_compact_division_256x2x8.pt
+epoch  66/80  train_loss=0.0246  val_loss=0.1131
+epoch  67/80  train_loss=0.0237  val_loss=0.1132
+epoch  68/80  train_loss=0.0228  val_loss=0.1125
+epoch  69/80  train_loss=0.0222  val_loss=0.1143
+epoch  70/80  train_loss=0.0216  val_loss=0.1155
+
+accuracy by tier:
+  0 trivial   233/233  = 100.0%
+  1 easy       19/19   = 100.0%
+  2 medium    449/449  = 100.0%
+  3 hard     1547/1578 =  98.0%
+  4 hardest  2197/2721 =  80.7%
+accuracy by op:
+  +          1000/1000 = 100.0%
+  -           998/1000 =  99.8%
+  /          1462/2000 =  73.1%
+  *           985/1000 =  98.5%
+accuracy by val scenario:
+  + cascading_carry_one_step                100/100  = 100.0%
+  + cascading_carry_two_step                 60/60   = 100.0%
+  + identity_or_zero                         40/40   = 100.0%
+  + independent_multi_carry                 140/140  = 100.0%
+  + no_carry                                140/140  = 100.0%
+  + overflow_non_cascading                  160/160  = 100.0%
+  + signed_negative_borrow_across_zero       20/20   = 100.0%
+  + signed_negative_multi_borrow             30/30   = 100.0%
+  + signed_negative_simple                   30/30   = 100.0%
+  + signed_positive_borrow_across_zero       20/20   = 100.0%
+  + signed_positive_multi_borrow             40/40   = 100.0%
+  + signed_positive_simple                   40/40   = 100.0%
+  + signed_result_zero                       20/20   = 100.0%
+  + single_carry                            160/160  = 100.0%
+  - borrow_across_zero                       40/40   = 100.0%
+  - equal_operands                           20/20   = 100.0%
+  - multi_borrow                            110/110  = 100.0%
+  - negative_result_borrow_across_zero      120/120  = 100.0%
+  - negative_result_multi_borrow            160/160  = 100.0%
+  - negative_result_simple                  118/120  =  98.3%
+  - no_borrow                                90/90   = 100.0%
+  - signed_cascading_carry                   50/50   = 100.0%
+  - signed_independent_multi_carry           50/50   = 100.0%
+  - signed_low_carry                        100/100  = 100.0%
+  - single_borrow                           110/110  = 100.0%
+  - subtract_zero                            30/30   = 100.0%
+  / divide_by_one                            30/30   = 100.0%
+  / division_by_zero                         40/40   = 100.0%
+  / exact_q_1digit                          118/120  =  98.3%
+  / exact_q_2digit                          239/240  =  99.6%
+  / exact_q_3digit                           40/40   = 100.0%
+  / near_integer_above                      157/160  =  98.1%
+  / near_integer_below                      133/160  =  83.1%
+  / near_zero_nonzero                        40/40   = 100.0%
+  / rounded_below_medium                    168/340  =  49.4%
+  / rounded_below_small                      41/50   =  82.0%
+  / rounded_ge1_q1digit                      47/320  =  14.7%
+  / rounded_ge1_q2digit                      60/100  =  60.0%
+  / rounded_ge1_q3digit                      20/20   = 100.0%
+  / terminating_at_least_one_1dp             41/50   =  82.0%
+  / terminating_at_least_one_2dp             70/70   = 100.0%
+  / terminating_at_least_one_3dp             78/80   =  97.5%
+  / terminating_below_one_1dp                30/30   = 100.0%
+  / terminating_below_one_2dp                30/30   = 100.0%
+  / terminating_below_one_3dp                30/30   = 100.0%
+  / unit_quotient                            30/30   = 100.0%
+  / zero_numerator                           20/20   = 100.0%
+  * contains_zero_digit                     198/200  =  99.0%
+  * dense_mixed_digits                      638/650  =  98.2%
+  * identity_or_zero                         50/50   = 100.0%
+  * repeated_digit_operand                   99/100  =  99.0%
+  overall    4445/5000 =  88.9%
+  macro scenario accuracy   =  95.3%
+  minimum scenario accuracy =  14.7%
+minimum validation scenario accuracy: 14.7%

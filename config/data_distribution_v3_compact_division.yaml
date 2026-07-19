@@ -1,0 +1,78 @@
+extends: data_distribution_v2.yaml
+
+version: 3
+name: compact_division_capability_focused
+
+domain:
+  # Keep exactly three decimal places but remove redundant integer padding:
+  # 000.640 -> 0.640, -004.014 -> -4.014, 294.000 stays 294.000.
+  division_answer_format: compact_fixed_precision
+  representation: abacus-v2-compact-division
+
+dataset:
+  seed: 53
+  train_rows: 500000
+  # 5,000 yields the exact feasible split 1k/1k/1k/2k while retaining every
+  # signed scenario/length marginal from v2.
+  validation_rows: 5000
+  output_path: sample/pretrain_v3_compact_division.jsonl
+  report_path: sample/pretrain_v3_compact_division_report.json
+
+operations:
+  "+":
+    weight: 0.20
+  "-":
+    weight: 0.20
+  "*":
+    weight: 0.20
+  "/":
+    # Retain 100k examples for each other operation while doubling division
+    # from 100k to 200k examples.
+    weight: 0.40
+    operand_length_weights:
+      1x1: 0.01
+      1x2: 0.02
+      1x3: 0.02
+      2x1: 0.04
+      2x2: 0.06
+      2x3: 0.08
+      3x1: 0.12
+      3x2: 0.25
+      3x3: 0.40
+    sign_pattern_weights:
+      positive: 0.70
+      negative: 0.30
+    # Focus weights come from the measured weak groups: exact two-digit
+    # quotients, near-integer boundaries, rounded results below one, rounded
+    # one-digit integer quotients, and multi-place terminating decimals.
+    scenario_weights:
+      division_by_zero: 0.020
+      zero_numerator: 0.010
+      divide_by_one: 0.015
+      unit_quotient: 0.015
+      exact_q_1digit: 0.060
+      exact_q_2digit: 0.120
+      exact_q_3digit: 0.020
+      near_zero_nonzero: 0.020
+      near_integer_below: 0.080
+      near_integer_above: 0.080
+      terminating_below_one_1dp: 0.015
+      terminating_below_one_2dp: 0.015
+      terminating_below_one_3dp: 0.015
+      terminating_at_least_one_1dp: 0.025
+      terminating_at_least_one_2dp: 0.035
+      terminating_at_least_one_3dp: 0.040
+      rounded_below_small: 0.025
+      rounded_below_medium: 0.170
+      rounded_ge1_q1digit: 0.160
+      rounded_ge1_q2digit: 0.050
+      rounded_ge1_q3digit: 0.010
+    capability_focus_scenarios:
+      - exact_q_2digit
+      - near_integer_below
+      - near_integer_above
+      - terminating_at_least_one_1dp
+      - terminating_at_least_one_2dp
+      - terminating_at_least_one_3dp
+      - rounded_below_medium
+      - rounded_ge1_q1digit

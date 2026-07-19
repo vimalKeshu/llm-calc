@@ -1,0 +1,98 @@
+model:
+  vocab_size: 22
+  max_seq_len: 20
+  d_model: 256
+  attention_heads: 8
+  n_layers: 2
+  n_loops: 8
+  dropout: 0.05
+  use_abacus: true
+  input_injection: true
+  loop_signal: true
+  abacus_base: 4
+  max_abacus_offset: 16
+  min_abacus_decimal_exponent: -3
+  max_abacus_integer_exponent: 5
+  abacus_zero_offset_probability: 0.5
+
+grpo:
+  checkpoint_path: ckp/grpo_loop_iter4_v2_256x2x8.pt
+  data_sources:
+    - data_path: sample/pretrain_v2.jsonl
+      split: val
+    - data_path: sample/grpo_train_v2_seed20260717.jsonl
+      split: test
+    - data_path: sample/grpo_selection_v2_seed20260718.jsonl
+      split: test
+    - data_path: sample/grpo_selection_v2_seed20260719.jsonl
+      split: test
+    - data_path: sample/grpo_selection_v2_seed20260720.jsonl
+      split: test
+    - data_path: sample/grpo_selection_v2_seed20260721.jsonl
+      split: test
+    - data_path: sample/grpo_selection_v2_seed20260722.jsonl
+      split: test
+  output_path: ckp/grpo_loop_iter7_v2_256x2x8.pt
+  epochs: 2
+  prompts_per_epoch: 1200
+  prompt_batch_size: 4
+  operation_weights:
+    "*": 0.42
+    "/": 0.43
+    "+": 0.075
+    "-": 0.075
+  priority:
+    "*":
+      sign_pattern_weights:
+        negative_positive: 2.5
+        negative_negative: 2.5
+    "/":
+      scenario_weights:
+        near_integer_above: 2.0
+        near_integer_below: 2.0
+        rounded_below_medium: 2.0
+        rounded_ge1_q1digit: 2.0
+        exact_q_2digit: 1.5
+        terminating_at_least_one_1dp: 1.5
+        terminating_at_least_one_2dp: 1.5
+        terminating_at_least_one_3dp: 1.5
+  group_sizes:
+    "*": 8
+    "/": 16
+    "+": 8
+    "-": 8
+  partial_credit_weights:
+    "/": 0.25
+  optimization_epochs: 1
+  temperature: 1.0
+  lr: 5.0e-7
+  weight_decay: 0.0
+  clip_epsilon: 0.2
+  beta: 0.01
+  max_grad_norm: 1.0
+  log_every: 20
+  seed: 49
+
+replay:
+  data_path: sample/pretrain_v2.jsonl
+  split: train
+  operations: ["+", "-", "*"]
+  pool_per_operation: 10000
+  batch_size: 24
+  supervised_weight: 0.20
+  distillation_weight: 1.00
+
+eval:
+  data_path: sample/grpo_selection_v2_seed20260723.jsonl
+  split: test
+  batch_size: 128
+  limit: 0
+  every_epochs: 1
+  checkpoint_gate:
+    protected_operations:
+      "+": 0.002
+      "-": 0.002
+    overall_regression_tolerance: 0.001
+    target_weights:
+      "*": 0.55
+      "/": 0.45

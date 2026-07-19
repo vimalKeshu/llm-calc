@@ -24,6 +24,15 @@ incorrect.
 Do not add zero padding to variable-length integers beyond zeros naturally
 created by reversal.
 
+Multiplication additionally supports a negative second operand when both
+operands are negative. Each magnitude is reversed independently while both
+unary signs remain attached:
+
+```text
+Normal expression       Internal training expression
+-12*-34=408             -21*-43=804
+```
+
 ### Division
 
 Keep division operands and answers in natural, most-significant-digit-first
@@ -48,9 +57,21 @@ zeros and insignificant trailing fractional zeros for user-facing output.
 Division remains rounded to three fractional digits. The internal decimal
 point is always present, including for exact integer quotients.
 
+Division by zero is the exception to the fixed numeric shape. Its categorical
+answer is `NAN`. The tokenizer represents the complete answer with one atomic
+`<nan>` token and decoding displays it as `NAN`:
+
+```text
+12/0=NAN
+-12/0=NAN
+0/0=NAN
+```
+
 ### Signs and operators
 
 - A negative sign stays before the magnitude; its digits alone are reversed.
+- In `-a*-b`, both minus signs are unary signs and tokenize as `~`; the `*`
+  remains the only binary operator.
 - The subtraction operator is not moved or reversed.
 - The existing tokenizer may continue mapping a unary `-` to the internal `~`
   token so that unary signs and binary subtraction remain distinct.

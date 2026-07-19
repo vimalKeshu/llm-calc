@@ -89,7 +89,8 @@ def train(args):
     print(f"device: {device}")
 
     stoi, itos = V.build_vocab()
-    expected_representation = (
+    expected_representation = mc.get(
+        "expected_representation",
         "abacus-v1" if mc.get("use_abacus", False) else None)
     train_inputs, train_targets, train_mask = load_examples(
         tc["data_path"], stoi, mc["max_seq_len"], "train",
@@ -165,10 +166,22 @@ def train(args):
                 "internal_format", cfg["eval"].get("reverse", True))
             metrics = tier_report(model, cfg, device, stoi, itos,
                                   reverse=internal_format)
-            category_accuracies = [*metrics["tier"].values(),
-                                   *metrics["op"].values()]
+            checkpoint_metric = tc.get(
+                "checkpoint_metric", "tier_op_min")
+            if checkpoint_metric == "scenario_min":
+                category_accuracies = list(metrics["scenario"].values())
+                metric_label = "validation scenario"
+            elif checkpoint_metric == "tier_op_min":
+                category_accuracies = [*metrics["tier"].values(),
+                                       *metrics["op"].values()]
+                metric_label = "tier/operation category"
+            else:
+                raise ValueError(
+                    f"unsupported checkpoint_metric={checkpoint_metric!r}")
             min_accuracy = min(category_accuracies)
-            print(f"minimum category accuracy: {100 * min_accuracy:.1f}%")
+            print(
+                f"minimum {metric_label} accuracy: "
+                f"{100 * min_accuracy:.1f}%")
             if min_accuracy > best_min_accuracy:
                 best_min_accuracy = min_accuracy
                 best_epoch = epoch

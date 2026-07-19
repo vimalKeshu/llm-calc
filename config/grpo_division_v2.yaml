@@ -1,0 +1,46 @@
+model:
+  vocab_size: 22
+  max_seq_len: 20
+  d_model: 256
+  attention_heads: 8
+  n_layers: 2
+  n_loops: 8
+  dropout: 0.05
+  use_abacus: true
+  input_injection: true
+  loop_signal: true
+  abacus_base: 4
+  max_abacus_offset: 16
+  min_abacus_decimal_exponent: -3
+  max_abacus_integer_exponent: 5
+  abacus_zero_offset_probability: 0.5
+
+grpo:
+  # Epoch 75 has the strongest declared held-out division result (12.5%) and
+  # 46.9% pass@64, so exact-answer groups have enough positive samples for GRPO.
+  checkpoint_path: ckp/abacus_injection_v2_256x2x8.epoch-75.pt
+  # Seed 20260717 is disjoint from both SFT data and the seed-20260716 test set.
+  # It supplies verifiable full-width prompts without leaking evaluation cases.
+  data_path: sample/grpo_train_v2_seed20260717.jsonl
+  split: test
+  operand_digits: 3x3
+  output_path: ckp/grpo_division_v2_256x2x8.pt
+  epochs: 3
+  prompts_per_epoch: 512
+  prompt_batch_size: 4
+  group_size: 8
+  optimization_epochs: 1
+  temperature: 1.0
+  lr: 1.0e-5
+  weight_decay: 0.0
+  clip_epsilon: 0.2
+  beta: 0.01
+  max_grad_norm: 1.0
+  log_every: 10
+  seed: 42
+
+eval:
+  data_path: sample/unseen_test_v2_seed20260716.jsonl
+  split: test
+  batch_size: 128
+  limit: 0

@@ -1,5 +1,5 @@
 model:
-  vocab_size: 21
+  vocab_size: 22
   max_seq_len: 20
   d_model: 256
   attention_heads: 8
@@ -28,6 +28,7 @@ train:
 
 eval:
   data_path: config/pretrain_eval.yaml
+  algorithmic_data_path: config/pretrain_algorithmic_eval.yaml
   temp: 0
   internal_format: true
   checkpoint_path: ckp/abacus_injection_256x2x8.pt
